@@ -16,7 +16,6 @@ public class LookHelper {
 	}
 }
 
-
 //File vPath = new File( vSDCard.getParent() + vSDCard.getName() + "/tom" );
 //if( !vPath.exists() )
 //   vPath.mkdirs();
