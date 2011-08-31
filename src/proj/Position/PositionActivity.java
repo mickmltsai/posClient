@@ -1,6 +1,7 @@
 package proj.Position;
 
 import ntu.com.google.zxing.client.android.R;
+import android.R.string;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,10 +12,15 @@ import android.widget.TextView;
 
 public class PositionActivity extends Activity {
 
-	private TextView decodeText;
 	private MyWebView mapView;
-	// private WebView webView;
 	private Button scan;
+
+	private TextView pointTitle;
+	private String jsonURL;
+	private String mapID;
+	private String mapVer;
+	private String pointID;
+	private String title;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -24,16 +30,22 @@ public class PositionActivity extends Activity {
 
 		findViews();
 		setListeners();
-		startScan();
-		//Download.downImg();
-		showImage();// For test showing map without scan (just press return)
+		makeRootDir();
+		//startScan();
+		// Download.downImg();
+		// showImage();// For test showing map without scan (just press return)
 
 	}
 
 	private void findViews() {
-		decodeText = (TextView) findViewById(R.id.plainText);
-		// webView = (WebView) findViewById(R.id.webView1);
+		pointTitle = (TextView) findViewById(R.id.plainText);
+
 		mapView = (MyWebView) findViewById(R.id.myWebView1);
+		// Enable to zoom in/out
+		mapView.getSettings().setBuiltInZoomControls(true);
+		// Enable to zoom in/out by double tap
+		mapView.getSettings().setUseWideViewPort(true);
+
 		scan = (Button) findViewById(R.id.scan);
 	}
 
@@ -71,16 +83,10 @@ public class PositionActivity extends Activity {
 	}
 
 	private void startScan() {
-		// Intent intent=new Intent("ntu.com.google.zxing.client.android.SCAN");
-		// intent.setClassName("ntu.com.google.zxing.client.android",
-		// "ntu.com.google.zxing.client.android.CaptureActivity");
-		// startActivityForResult(intent, 0);
-
 		Intent intent = new Intent("ntu.com.google.zxing.client.android.SCAN");
 		intent.setPackage("ntu.com.google.zxing.client.android");
 		intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
 		startActivityForResult(intent, 0);
-
 	}
 
 	@Override
@@ -90,8 +96,18 @@ public class PositionActivity extends Activity {
 				String contents = intent.getStringExtra("SCAN_RESULT");
 				String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
 
-				decodeText.setText(contents);
-				showImage();
+				String[] contentArray = contents.split("\\?");
+				String[] contentPart = contentArray[1].split("&");
+
+				// Assign value
+				jsonURL = contents;
+				mapID = contentPart[0];
+				mapVer = contentPart[1];
+				pointID = contentPart[2];
+				title = contentPart[3];
+
+				// Show title
+				pointTitle.setText(title);
 
 				// Handle successful scan
 			} else if (resultCode == RESULT_CANCELED) {
@@ -100,8 +116,18 @@ public class PositionActivity extends Activity {
 		}
 	}
 
-	private void updateDate(String dataName) {
-	
+	private void makeRootDir() {
+		//Make root dir if not in SD card yet
+		
+		Boolean isExistent; 
+		LookHelper looker = new LookHelper();
+		isExistent = looker.look("/", "position");
+		pointTitle.setText(isExistent.toString());
+		if (!isExistent) {
+			MakeDirHelper maker = new MakeDirHelper();
+			maker.make("/", "position");
+		}
+		
 	}
-	
+
 }

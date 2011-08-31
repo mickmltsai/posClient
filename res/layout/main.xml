@@ -11,5 +11,5 @@
     <TextView android:layout_height="wrap_content" android:text="Plain text" android:layout_width="wrap_content" android:id="@+id/plainText"></TextView>
     <Button android:id="@+id/scan" android:text="Scan again" android:layout_height="wrap_content" android:layout_width="match_parent"></Button>
 </LinearLayout>
-<proj.Position.MyWebView android:id="@+id/myWebView1" android:layout_width="match_parent" android:layout_height="match_parent"></proj.Position.MyWebView>
+<proj.Position.MyWebView android:layout_height="match_parent" android:layout_width="match_parent" android:id="@+id/myWebView1"></proj.Position.MyWebView>
 </LinearLayout>
