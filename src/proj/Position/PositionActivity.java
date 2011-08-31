@@ -121,11 +121,11 @@ public class PositionActivity extends Activity {
 		
 		Boolean isExistent; 
 		LookHelper looker = new LookHelper();
-		isExistent = looker.look("/", "position");
+		isExistent = looker.look(Global.SDPathRoot, Global.MapDirName);
 
 		if (!isExistent) {
 			MakeDirHelper maker = new MakeDirHelper();
-			maker.make("/", "position");
+			maker.make(Global.SDPathRoot, Global.MapDirName);
 		}
 		
 	}
