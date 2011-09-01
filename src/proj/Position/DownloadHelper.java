@@ -12,7 +12,7 @@ import android.os.Environment;
 
 public class DownloadHelper {
 
-	private void downImg(String downloadURL,String savePath,String fileName) {
+	public void downFile(String downloadURL,String savePath,String fileName) {
 		try {
 			// set the download URL, a url that points to a file on the internet
 			// this is the file to be downloaded

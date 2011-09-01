@@ -1,5 +1,7 @@
 package proj.Position;
 
+import java.io.File;
+
 import ntu.com.google.zxing.client.android.R;
 import android.app.Activity;
 import android.content.Intent;
@@ -30,6 +32,7 @@ public class PositionActivity extends Activity {
 		findViews();
 		setListeners();
 		makeRootDir();
+		mapJsonDownload();
 		// startScan();
 		// Download.downImg();
 		// showImage();// For test showing map without scan (just press return)
@@ -127,6 +130,36 @@ public class PositionActivity extends Activity {
 			maker.make(Global.SDPathRoot, Global.MapDirName);
 		}
 
+	}
+
+	private Boolean searchMapDir(String mapID) {
+		// Check whether the Map Dir existss
+
+		LookHelper looker = new LookHelper();
+
+		return looker.look(Global.MapDirRoot, mapID);
+	}
+
+	private void mapJsonDownload() {
+		//Downlaod the Json file
+		
+		DownloadHelper downloader = new DownloadHelper();
+		Boolean isExistent;
+		File jsonPath = new File(Global.MapDirRoot + Global.LastJson);
+
+		LookHelper looker = new LookHelper();
+		isExistent = looker.look(Global.MapDirRoot, Global.LastJson);
+
+		if (isExistent) {
+			//jsonPath.delete();
+		}
+
+		downloader.downFile("http://dl.dropbox.com/u/22034772/example.json",
+				Global.MapDirRoot, Global.LastJson);
+	}
+
+	private Boolean checkMapVerUpdate() {
+		return true;
 	}
 
 }
