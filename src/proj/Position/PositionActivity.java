@@ -1,7 +1,6 @@
 package proj.Position;
 
 import ntu.com.google.zxing.client.android.R;
-import android.R.string;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,7 +30,7 @@ public class PositionActivity extends Activity {
 		findViews();
 		setListeners();
 		makeRootDir();
-		//startScan();
+		// startScan();
 		// Download.downImg();
 		// showImage();// For test showing map without scan (just press return)
 
@@ -117,9 +116,9 @@ public class PositionActivity extends Activity {
 	}
 
 	private void makeRootDir() {
-		//Make root dir if not in SD card yet
-		
-		Boolean isExistent; 
+		// Make root dir if not in SD card yet
+
+		Boolean isExistent;
 		LookHelper looker = new LookHelper();
 		isExistent = looker.look(Global.SDPathRoot, Global.MapDirName);
 
@@ -127,7 +126,7 @@ public class PositionActivity extends Activity {
 			MakeDirHelper maker = new MakeDirHelper();
 			maker.make(Global.SDPathRoot, Global.MapDirName);
 		}
-		
+
 	}
 
 }
