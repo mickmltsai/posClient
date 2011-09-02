@@ -133,7 +133,7 @@ public class PositionActivity extends Activity {
 	}
 
 	private Boolean searchMapDir(String mapID) {
-		// Check whether the Map Dir existss
+		// Check whether the Map dir exists or not
 
 		LookHelper looker = new LookHelper();
 
@@ -141,17 +141,19 @@ public class PositionActivity extends Activity {
 	}
 
 	private void mapJsonDownload() {
-		//Downlaod the Json file
-		
-		DownloadHelper downloader = new DownloadHelper();
-		Boolean isExistent;
-		File jsonPath = new File(Global.MapDirRoot + Global.LastJson);
+		// Download the JSON file
 
+		DownloadHelper downloader = new DownloadHelper();
 		LookHelper looker = new LookHelper();
+		Boolean isExistent;
+
+		File jsonPath = new File(Global.MapDirRoot + Global.LastJson);
 		isExistent = looker.look(Global.MapDirRoot, Global.LastJson);
 
+		// Delete the old JSON file (but it's not necessary, it can just be
+		// overwritten)
 		if (isExistent) {
-			//jsonPath.delete();
+			jsonPath.delete();
 		}
 
 		downloader.downFile("http://dl.dropbox.com/u/22034772/example.json",
