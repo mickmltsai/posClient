@@ -6,5 +6,5 @@ public class Global {
 	static String MapDirName = "Position";
 	static String SDPathRoot = "/";
 	static String MapDirRoot = SDPathRoot + MapDirName + "/";
-	static String LastJson = "last.json";
+	//static String LastJson = "last.json";
 }

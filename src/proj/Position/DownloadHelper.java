@@ -12,8 +12,8 @@ import android.os.Environment;
 
 public class DownloadHelper {
 
-	public void downFile(String downloadURL,String savePath,String fileName) {
-		try {
+	public void downFile(String downloadURL,String savePath,String fileName) throws IOException {
+	
 			// set the download URL, a url that points to a file on the internet
 			// this is the file to be downloaded
 			URL url = new URL(downloadURL);
@@ -71,11 +71,7 @@ public class DownloadHelper {
 			fileOutput.close();
 
 			// catch some possible errors...
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+
 	}
 
 	public static void updateProgress(int currentSize, int totalSize) {
