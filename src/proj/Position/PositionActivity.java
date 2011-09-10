@@ -11,18 +11,22 @@ import ntu.com.google.zxing.client.android.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Message;
+import android.text.style.SuperscriptSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class PositionActivity extends Activity implements Runnable {
+public class PositionActivity extends Activity {
 
 	private MyWebView mapView;
 	private Button scan;
@@ -33,10 +37,10 @@ public class PositionActivity extends Activity implements Runnable {
 	private String mapVer;
 	private String pointID;
 	private String title;
-	
-	private Thread thread;
-	    
 
+	private Thread thread;
+	ProgressDialog aa;
+	
 	// public enum mapKey {
 	// mapID, mapVer, title, map
 	// }
@@ -51,7 +55,7 @@ public class PositionActivity extends Activity implements Runnable {
 		setListeners();
 		makeRootDir();
 		startScan();
-		//downloadMapJson(mapID);
+		// downloadMapJson(mapID);
 		// Download.downImg();
 		// showImage();// For test showing map without scan (just press return)
 
@@ -110,6 +114,7 @@ public class PositionActivity extends Activity implements Runnable {
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		
 		if (requestCode == 0) {
 			if (resultCode == RESULT_OK) {
 				String contents = intent.getStringExtra("SCAN_RESULT");
@@ -121,7 +126,7 @@ public class PositionActivity extends Activity implements Runnable {
 
 					// Assign value
 					jsonURL = contents;
-					
+
 					String[] tmp = contentPart[0].split("=");
 					mapID = tmp[1];
 					tmp = contentPart[1].split("=");
@@ -133,15 +138,33 @@ public class PositionActivity extends Activity implements Runnable {
 
 					// Show title
 					pointTitle.setText(title);
-					
 
-					//Check whether it need to download Json file
-					checkMapVerUpdate(mapID,mapVer);
-					//Start download Json file if need
-					thread = new Thread(this);
-					thread.start();
-					//downloadMapJson(mapID);
+					// Check whether it need to download Json file
+					checkMapVerUpdate(mapID, mapVer);
 					
+					//aa = new AlertDialog.Builder(PositionActivity.this).create();
+					aa = new ProgressDialog(PositionActivity.this);
+					aa.setTitle("Downloading...");
+					aa.setMessage("Please wait");
+					aa.show();
+					// Start download Json file if need
+					thread = new Thread(new Runnable() {
+						// @Override
+						public void run() {
+							// super.run();
+							Log.e("test", "yo");
+							downloadMapJson(mapID);
+							// Message m = new Message();
+							// // 定義 Message的代號，handler才知道這個號碼是不是自己該處理的。
+							// m.what = MEG_INVALIDATE;
+							// handler.sendMessage(m);
+							handler.sendEmptyMessage(100);
+						}
+					});
+
+					thread.start();
+					// downloadMapJson(mapID);
+
 				} catch (Exception e) {
 					// TODO: handle exception
 					// Handle when scan QR code which is not our form
@@ -151,11 +174,12 @@ public class PositionActivity extends Activity implements Runnable {
 				// Handle successful scan
 			} else if (resultCode == RESULT_CANCELED) {
 				// Handle cancel
-				
-				//Show AlertDialog for temporarily handle (Need to show last map)
+
+				// Show AlertDialog for temporarily handle (Need to show last
+				// map)
 				Builder gg = new AlertDialog.Builder(PositionActivity.this);
-				gg.setMessage("Scan failed");
-				gg.setTitle("Scan failed").setPositiveButton("OK",
+				gg.setMessage("Scan canceled");
+				gg.setTitle("Scan canceled").setPositiveButton("OK",
 						new DialogInterface.OnClickListener() {
 
 							@Override
@@ -178,7 +202,7 @@ public class PositionActivity extends Activity implements Runnable {
 		isExistent = looker.look(Global.SDPathRoot, Global.MapDirName);
 
 		if (!isExistent) {
-			MakeFileHelper maker = new MakeFileHelper();
+			MakeDirHelper maker = new MakeDirHelper();
 			maker.make(Global.SDPathRoot, Global.MapDirName);
 		}
 
@@ -198,9 +222,9 @@ public class PositionActivity extends Activity implements Runnable {
 		DownloadHelper downloader = new DownloadHelper();
 		LookHelper looker = new LookHelper();
 		Boolean isExistent;
-		
+
 		File SDCardRoot = Environment.getExternalStorageDirectory();
-		MakeFileHelper def = new MakeFileHelper();
+		MakeDirHelper def = new MakeDirHelper();
 		def.make(Global.MapDirRoot, mapId);
 
 		try {
@@ -208,10 +232,10 @@ public class PositionActivity extends Activity implements Runnable {
 					"http://dl.dropbox.com/u/22034772/example.json",
 					Global.MapDirRoot + "/" + mapId, mapId + ".json");
 
-			
 			File abc = new File(SDCardRoot + "/" + Global.MapDirRoot + "/"
 					+ mapId + "/" + mapId + ".json");
-			File dstFile = new File(SDCardRoot + "/" +Global.MapDirRoot + "/" + "last.json");
+			File dstFile = new File(SDCardRoot + "/" + Global.MapDirRoot + "/"
+					+ "last.json");
 
 			BufferedInputStream in = new BufferedInputStream(
 					new FileInputStream(abc));
@@ -225,17 +249,21 @@ public class PositionActivity extends Activity implements Runnable {
 		}
 	}
 
-	private Boolean checkMapVerUpdate(String mapId,String mapVer) {
-		//Return False when it need to be updated
+	private Boolean checkMapVerUpdate(String mapId, String mapVer) {
+		// Return False when it need to be updated
 		return true;
 	}
-    public void run() 
-    {
-    	Log.e("test", "yo");
-    	downloadMapJson(mapID);
-//        Message m = new Message();
-//	// 定義 Message的代號，handler才知道這個號碼是不是自己該處理的。
-//	m.what = MEG_INVALIDATE;
-//	handler.sendMessage(m);
-    }
+
+	private Handler handler = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case 100:
+				aa.dismiss();
+				break;
+			}
+		}
+	};
+
 }
