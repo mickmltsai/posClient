@@ -318,10 +318,11 @@ public class PositionActivity extends Activity {
 
 		final String mimeType = "text/html";
 		final String encoding = "utf-8";
-
+//====================================================================================================
 		Global.x = 500;
 		mapView.invalidate();
 		mapView.loadDataWithBaseURL("about:blank", data, mimeType, encoding, "");
+//====================================================================================================
 
 	}
 
