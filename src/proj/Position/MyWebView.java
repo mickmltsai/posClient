@@ -91,8 +91,8 @@ public class MyWebView extends WebView {
 
 						if ((tx1 - x[i]) * (tx1 - x[i]) + (ty1 - y[i])
 								* (ty1 - y[i]) <= pointR * pointR) {
-							Toast.makeText(c, "test", Toast.LENGTH_SHORT)
-									.show();
+//							Toast.makeText(c, "test", Toast.LENGTH_SHORT)
+//									.show();
 
 							Builder testt;
 							testt = new AlertDialog.Builder(c);
