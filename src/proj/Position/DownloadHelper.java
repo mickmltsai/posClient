@@ -8,9 +8,28 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import android.app.DownloadManager;
+import android.app.DownloadManager.Request;
+import android.net.Uri;
 import android.os.Environment;
 
 public class DownloadHelper {
+	
+	//Use android manager(2.3) to downlaod  http file 
+	
+	// for (int i = 0; i < 30; i++) {
+	// DownloadManager dm = (DownloadManager)
+	// getSystemService(DOWNLOAD_SERVICE);
+	// Request request = new Request(
+	// Uri.parse("http://dl.dropbox.com/u/871055/iii.png")); 	Uri.parse("http://i.imgur.com/XBqGN.jpg"));
+	//
+	// Uri uri = Uri
+	// .parse("file:///mnt/sdcard/Position/test" + i + ".png");
+	// request.setDestinationUri(uri);
+	//
+	// request.setDescription("YAYA");
+	// dm.enqueue(request);
+	// }
 
 	public void downFile(String downloadURL,String savePath,String fileName) throws IOException {
 	
