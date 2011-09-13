@@ -245,12 +245,12 @@ public class PositionActivity extends Activity {
 
 	}
 
-	private Boolean searchMapDir(String mapID) {
+	private Boolean searchMapDir(String mapId) {
 		// Check whether the Map dir exists or not
 
 		LookHelper looker = new LookHelper();
 
-		return looker.look(Global.MapDirRoot, mapID);
+		return looker.look(Global.MapDirRoot, mapId);
 	}
 
 	private void downloadMapJson(String mapId, String downHttpUrl)
@@ -298,7 +298,7 @@ public class PositionActivity extends Activity {
 		return look.look(Global.MapDirRoot, MapId);
 	}
 
-	private void showMapData(String mapID) {
+	private void showMapData(String mapId) {
 
 		// Enable to zoom in/out
 
@@ -314,15 +314,17 @@ public class PositionActivity extends Activity {
 
 		// String data = "<img src = \"file:///sdcard/somefile.jpg\" />";
 		String data = "<img src = \"file:///sdcard/" + Global.MapDirName + "/"
-				+ mapID + "/" + "map.jpg" + "\" />";
+				+ mapId + "/" + "map.jpg" + "\" />";
 
 		final String mimeType = "text/html";
 		final String encoding = "utf-8";
-//====================================================================================================
-		Global.x = 500;
-		mapView.invalidate();
+
+		// Set map id
+		Global.MapId = mapId;
+		// Show map IMG
 		mapView.loadDataWithBaseURL("about:blank", data, mimeType, encoding, "");
-//====================================================================================================
+		// Update the touch points data (touchevent and onDraw method)
+		mapView.invalidate();
 
 	}
 

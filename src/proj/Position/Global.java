@@ -8,6 +8,7 @@ public class Global {
 	public final static String SDPathRoot = "/";
 	public final static String MapDirRoot = SDPathRoot + MapDirName + "/";
 	public static int x = 100;
+	public static String MapId = null; 
 	//static String LastJson = "last.json";
 	
 	
