@@ -18,10 +18,11 @@ public class MyWebView extends WebView {
 	float pointR = 50;
 	Context c;
 
-	float[] tx = { 50, 200 };
-	float[] ty = { 50, 200 };
+	
+	
 
-	AlertDialog.Builder gg;
+
+	AlertDialog.Builder test;
 
 	public MyWebView(Context context, AttributeSet attrs) {
 		// TODO Auto-generated constructor stub
@@ -33,6 +34,9 @@ public class MyWebView extends WebView {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		int testp = Global.x; 
+		float[] tx = { 50, testp };
+		float[] ty = { 50, testp };
 
 		if (event.getAction() == MotionEvent.ACTION_UP) {
 
@@ -45,9 +49,9 @@ public class MyWebView extends WebView {
 						* (ty1 - ty[i]) <= pointR * pointR) {
 					Toast.makeText(c, "test", Toast.LENGTH_SHORT).show();
 
-					gg = new AlertDialog.Builder(c);
-					gg.setMessage("test");
-					gg.setTitle("test").setPositiveButton("OK",
+					test = new AlertDialog.Builder(c);
+					test.setMessage("test");
+					test.setTitle("test").setPositiveButton("OK",
 							new DialogInterface.OnClickListener() {
 
 								@Override
@@ -57,7 +61,7 @@ public class MyWebView extends WebView {
 
 								}
 							});
-					gg.show();
+					test.show();
 
 				}
 
@@ -70,7 +74,9 @@ public class MyWebView extends WebView {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
-
+		int testp = Global.x; 
+		float[] tx = { 50, testp };
+		float[] ty = { 50, testp };
 		// float x = pointX * getScale();
 		// float y = pointY * getScale();
 		//

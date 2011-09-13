@@ -8,40 +8,41 @@ import android.os.Environment;
 
 public class LookHelper {
 	public Boolean look(String filePath, String fileName) {
-		Boolean result = false;
+
 		File SDCardRoot = Environment.getExternalStorageDirectory();
-		File lookFilePath = new File(SDCardRoot + filePath + fileName);
-		
+		File lookFilePath = new File(SDCardRoot + "/" + filePath + "/"
+				+ fileName);
+
 		return lookFilePath.exists();
 	}
 }
 
-//File vPath = new File( vSDCard.getParent() + vSDCard.getName() + "/tom" );
-//if( !vPath.exists() )
-//   vPath.mkdirs();
+// File vPath = new File( vSDCard.getParent() + vSDCard.getName() + "/tom" );
+// if( !vPath.exists() )
+// vPath.mkdirs();
 
-//File SDCardRoot = Environment.getExternalStorageDirectory();
-//File vPath = new File( SDCardRoot + "/tom" );
-//  if( !vPath.exists() )
-//      vPath.mkdirs();
-//   
-//   // 寫入檔案
-//   FileWriter vFile = null;
-//try {
-//	vFile = new FileWriter( SDCardRoot + "/tom/myTest.txt" );
-//} catch (IOException e1) {
-//	// TODO Auto-generated catch block
-//	e1.printStackTrace();
-//}
-//   try {
-//	vFile.write("Hello Android");
-//} catch (IOException e) {
-//	// TODO Auto-generated catch block
-//	e.printStackTrace();
-//}
-//   try {
-//	vFile.close();
-//} catch (IOException e) {
-//	// TODO Auto-generated catch block
-//	e.printStackTrace();
-//}
+// File SDCardRoot = Environment.getExternalStorageDirectory();
+// File vPath = new File( SDCardRoot + "/tom" );
+// if( !vPath.exists() )
+// vPath.mkdirs();
+//
+// // 寫入檔案
+// FileWriter vFile = null;
+// try {
+// vFile = new FileWriter( SDCardRoot + "/tom/myTest.txt" );
+// } catch (IOException e1) {
+// // TODO Auto-generated catch block
+// e1.printStackTrace();
+// }
+// try {
+// vFile.write("Hello Android");
+// } catch (IOException e) {
+// // TODO Auto-generated catch block
+// e.printStackTrace();
+// }
+// try {
+// vFile.close();
+// } catch (IOException e) {
+// // TODO Auto-generated catch block
+// e.printStackTrace();
+// }
