@@ -6,6 +6,8 @@ import java.io.FileReader;
 
 import javax.xml.xpath.XPath;
 
+import ntu.com.google.zxing.client.android.R;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -19,7 +21,9 @@ import android.graphics.Paint;
 import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.Toast;
 
@@ -87,17 +91,29 @@ public class MyWebView extends WebView {
 					float tx1 = (getScrollX() + event.getX()) / getScale();
 					float ty1 = (getScrollY() + event.getY()) / getScale();
 
+					float cr = pointR / getScale();
 					for (int i = 0; i < jsonObjArray.length(); i++) {
+						float d = (tx1 - x[i]) * (tx1 - x[i]) + (ty1 - y[i])
+								* (ty1 - y[i]);
+						float sr = 0.5f;
+						d = (float) Math.pow(d, sr);
 
-						if ((tx1 - x[i]) * (tx1 - x[i]) + (ty1 - y[i])
-								* (ty1 - y[i]) <= pointR * pointR) {
-//							Toast.makeText(c, "test", Toast.LENGTH_SHORT)
-//									.show();
+						if (d <= cr) {
+							// Toast.makeText(c, "test", Toast.LENGTH_SHORT)
+							// .show();
 
+							LayoutInflater factory=LayoutInflater.from(c);
+							final View v1=factory.inflate(R.layout.contentview,null);
+
+							
+							
 							Builder testt;
 							testt = new AlertDialog.Builder(c);
-							testt.setMessage(jsonObjArray.getJSONObject(i).getString("description"));
-							testt.setTitle(jsonObjArray.getJSONObject(i).getString("title")).setPositiveButton("OK",
+							testt.setMessage(jsonObjArray.getJSONObject(i)
+									.getString("description"));
+							testt.setTitle(
+									jsonObjArray.getJSONObject(i).getString(
+											"title")).setPositiveButton("OK",
 									new DialogInterface.OnClickListener() {
 
 										@Override
@@ -107,7 +123,7 @@ public class MyWebView extends WebView {
 											// TODO Auto-generated method stub
 
 										}
-									});
+									}).setView(v1);
 							testt.show();
 
 						}
