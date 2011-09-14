@@ -17,6 +17,7 @@ import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Environment;
 import android.util.AttributeSet;
@@ -25,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MyWebView extends WebView {
@@ -102,28 +104,38 @@ public class MyWebView extends WebView {
 							// Toast.makeText(c, "test", Toast.LENGTH_SHORT)
 							// .show();
 
-							LayoutInflater factory=LayoutInflater.from(c);
-							final View v1=factory.inflate(R.layout.contentview,null);
+							LayoutInflater factory = LayoutInflater.from(c);
+							final View v1 = factory.inflate(
+									R.layout.contentview, null);
 
-							
-							
 							Builder testt;
 							testt = new AlertDialog.Builder(c);
-							testt.setMessage(jsonObjArray.getJSONObject(i)
-									.getString("description"));
+							// testt.setMessage(jsonObjArray.getJSONObject(i)
+							// .getString("description"));
 							testt.setTitle(
 									jsonObjArray.getJSONObject(i).getString(
-											"title")).setPositiveButton("OK",
-									new DialogInterface.OnClickListener() {
+											"title"))
+									.setPositiveButton(
+											"OK",
+											new DialogInterface.OnClickListener() {
 
-										@Override
-										public void onClick(
-												DialogInterface dialog,
-												int which) {
-											// TODO Auto-generated method stub
+												@Override
+												public void onClick(
+														DialogInterface dialog,
+														int which) {
+													// TODO Auto-generated
+													// method stub
 
-										}
-									}).setView(v1);
+												}
+											}).setView(v1);
+
+							TextView title = (TextView) v1
+									.findViewById(R.id.ttt);
+							title.setTextSize(20);
+							title.setTextColor(Color.YELLOW);
+							title.setText(jsonObjArray.getJSONObject(i)
+									.getString("description"));
+
 							testt.show();
 
 						}

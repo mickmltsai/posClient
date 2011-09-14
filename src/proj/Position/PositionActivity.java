@@ -66,7 +66,9 @@ public class PositionActivity extends Activity {
 		findViews();
 		setListeners();
 		makeRootDir();
-		startScan();
+		showLastMapData();
+		//startScan();
+		
 		// downloadMapJson(mapID);
 		// Download.downImg();
 		// showImage();// For test showing map without scan (just press return)
