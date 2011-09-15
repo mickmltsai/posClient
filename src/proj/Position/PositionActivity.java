@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,14 +23,17 @@ import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class PositionActivity extends Activity {
@@ -66,12 +70,8 @@ public class PositionActivity extends Activity {
 		findViews();
 		setListeners();
 		makeRootDir();
-		showLastMapData();
-		//startScan();
-		
-		// downloadMapJson(mapID);
-		// Download.downImg();
-		// showImage();// For test showing map without scan (just press return)
+		//showLastMapData();
+		startScan();
 
 	}
 
@@ -130,7 +130,12 @@ public class PositionActivity extends Activity {
 					title = tmp[1];
 
 					// Show title
+					pointTitle.setTextColor(Color.RED);
+					pointTitle.setTextSize(20);
 					pointTitle.setText(title);
+
+					// Assign point id to global variable
+					Global.PointId = pointID;
 
 					// Check whether it need to download Json file
 					isNeedUpdate = !checkMapVerUpdate(mapID, mapVer);
@@ -191,10 +196,65 @@ public class PositionActivity extends Activity {
 						thread.start();
 					} else {
 						showMapData(mapID);
+
+						File SD = Environment.getExternalStorageDirectory();
+						File test = new File(SD + "/Position/" + mapID + "/"
+								+ mapID + ".json");
+
+						FileReader in = new FileReader(test);
+						BufferedReader stdin = new BufferedReader(in);
+
+						String jsonString = "";
+						String jsonString1 = null;
+						while (((jsonString1 = stdin.readLine()) != null)) {
+							jsonString = jsonString + jsonString1;
+						}
+						in.close();
+
+						JSONObject jsonObj = new JSONObject(jsonString);
+						JSONArray jsonObjArray = jsonObj.getJSONArray("points");
+
+						// JSONArray jsonPhoto = jsonObjArray.getJSONObject(
+						// Integer.valueOf(Global.PointId)).getJSONArray(
+						// "photos");
+						JSONObject jsonObjCoordObject;
+						jsonObjCoordObject = jsonObjArray.getJSONObject(Integer
+								.valueOf(Global.PointId));
+						String title = jsonObjCoordObject.getString("title");
+						String desc = jsonObjCoordObject
+								.getString("description");
+
+						LayoutInflater factory = LayoutInflater.from(this);
+						final View v1 = factory.inflate(R.layout.contentview,
+								null);
+
+						Builder gg = new AlertDialog.Builder(
+								PositionActivity.this);
+						gg.setTitle(title);
+						// gg.setMessage(desc);
+						gg.setPositiveButton("OK",
+								new DialogInterface.OnClickListener() {
+
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										// TODO Auto-generated method stub
+
+									}
+								});
+						TextView titlet = (TextView) v1.findViewById(R.id.ttt);
+						titlet.setTextSize(20);
+						titlet.setTextColor(Color.YELLOW);
+						titlet.setText(desc);
+						gg.setView(v1);
+
+						gg.show();
+
 					}
 
 				} catch (Exception e) {
 					// Handle when scan QR code which is not our form
+					showLastMapData();
 					pointTitle.setText("QR code error!");
 				}
 
@@ -301,13 +361,13 @@ public class PositionActivity extends Activity {
 			in.close();
 
 			JSONObject jsonObj = new JSONObject(jsonString);
-			
+
 			int verNow = jsonObj.getInt("mapVer");
-			
-			if (verNow>=Integer.valueOf(mapVer)) {
+
+			if (verNow >= Integer.valueOf(mapVer)) {
 				result = true;
 			}
-			//pointTitle.setText(verNow+" "+Integer.valueOf(mapVer));
+			// pointTitle.setText(verNow+" "+Integer.valueOf(mapVer));
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -404,6 +464,82 @@ public class PositionActivity extends Activity {
 
 	}
 
+	private void scanResultOk() {
+		// Show map data when download finished
+		showMapData(mapID);
+		waitDownDialog.dismiss();
+
+		File SD = Environment.getExternalStorageDirectory();
+		File test = new File(SD + "/Position/" + mapID + "/" + mapID + ".json");
+		try {
+
+			FileReader in = new FileReader(test);
+			BufferedReader stdin = new BufferedReader(in);
+
+			String jsonString = "";
+			String jsonString1 = null;
+			while (((jsonString1 = stdin.readLine()) != null)) {
+				jsonString = jsonString + jsonString1;
+			}
+			in.close();
+
+			JSONObject jsonObj = new JSONObject(jsonString);
+			JSONArray jsonObjArray = jsonObj.getJSONArray("points");
+
+			// JSONArray jsonPhoto = jsonObjArray.getJSONObject(
+			// Integer.valueOf(Global.PointId)).getJSONArray(
+			// "photos");
+			JSONObject jsonObjCoordObject;
+			jsonObjCoordObject = jsonObjArray.getJSONObject(Integer
+					.valueOf(Global.PointId));
+			String title = jsonObjCoordObject.getString("title");
+			String desc = jsonObjCoordObject.getString("description");
+
+			LayoutInflater factory = LayoutInflater.from(PositionActivity.this);
+			final View v1 = factory.inflate(R.layout.contentview, null);
+
+			Builder gg = new AlertDialog.Builder(PositionActivity.this);
+			gg.setTitle(title);
+			// gg.setMessage(desc);
+			gg.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+
+				}
+			});
+			TextView titlet = (TextView) v1.findViewById(R.id.ttt);
+
+			titlet.setTextSize(20);
+			titlet.setTextColor(Color.YELLOW);
+			titlet.setText(desc);
+
+			gg.setView(v1);
+
+			gg.show();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+
+	private void scanResultfailed() {
+		// Show failed dialog when download failed
+		waitDownDialog.dismiss();
+		Builder ggg = new AlertDialog.Builder(PositionActivity.this);
+		ggg.setMessage("Download failed!");
+		ggg.setTitle("Download failed!").setPositiveButton("OK",
+				new DialogInterface.OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog,
+							int which) {
+
+					}
+				});
+		ggg.show();
+	}
+
 	private Handler handler = new Handler() {
 		Boolean isOldMapData;
 
@@ -411,26 +547,11 @@ public class PositionActivity extends Activity {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case messageCode.DOWNLOAD_OK:
-				// Show map data when download finished
-				showMapData(mapID);
-				waitDownDialog.dismiss();
+				scanResultOk();
 
 				break;
 			case messageCode.DOWNLOAD_FAILED:
-				// Show failed dialog when download failed
-				waitDownDialog.dismiss();
-				Builder gg = new AlertDialog.Builder(PositionActivity.this);
-				gg.setMessage("Download failed!");
-				gg.setTitle("Download failed!").setPositiveButton("OK",
-						new DialogInterface.OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-
-							}
-						});
-				gg.show();
+				scanResultfailed();
 				break;
 			}
 

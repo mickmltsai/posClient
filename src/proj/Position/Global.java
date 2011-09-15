@@ -11,5 +11,6 @@ public class Global {
 	public static String MapId = null;
 	// static String LastJson = "last.json";
 	public static String JsonObjNow = null;
+	public static String PointId = null;
 
 }

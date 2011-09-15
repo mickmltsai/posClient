@@ -110,8 +110,8 @@ public class MyWebView extends WebView {
 
 							Builder testt;
 							testt = new AlertDialog.Builder(c);
-							// testt.setMessage(jsonObjArray.getJSONObject(i)
-							// .getString("description"));
+//							 testt.setMessage(jsonObjArray.getJSONObject(i)
+//							 .getString("description"));
 							testt.setTitle(
 									jsonObjArray.getJSONObject(i).getString(
 											"title"))
