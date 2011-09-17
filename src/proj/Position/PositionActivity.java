@@ -155,9 +155,10 @@ public class PositionActivity extends Activity {
 
 								try {
 									// Test URL (real = jsonURL)
-									downloadMapJson(mapID,
-											"http://dl.dropbox.com/u/22034772/example.json");
-
+//									downloadMapJson(mapID,
+//											"http://dl.dropbox.com/u/22034772/example.json");
+									downloadMapJson(mapID,jsonURL);
+									
 									// Test only download map img
 									File SD = Environment
 											.getExternalStorageDirectory();
