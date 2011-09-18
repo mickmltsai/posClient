@@ -180,9 +180,10 @@ public class PositionActivity extends Activity {
 											jsonString);
 									String map = jsonObj.getString("map");
 									DownloadHelper downloader = new DownloadHelper();
+									//======================================================================================
 									downloader.downFile(map, Global.MapDirRoot
-											+ "/" + mapID, "map.jpg");
-
+											+ "/" + mapID, "map");
+									//======================================================================================
 									handler.sendEmptyMessage(messageCode.DOWNLOAD_OK);
 								} catch (MalformedURLException e) {
 									e.printStackTrace();
@@ -219,8 +220,10 @@ public class PositionActivity extends Activity {
 						// Integer.valueOf(Global.PointId)).getJSONArray(
 						// "photos");
 						JSONObject jsonObjCoordObject;
+//=================================================================================================
 						jsonObjCoordObject = jsonObjArray.getJSONObject(Integer
 								.valueOf(Global.PointId));
+//=================================================================================================
 						String title = jsonObjCoordObject.getString("title");
 						String desc = jsonObjCoordObject
 								.getString("description");
@@ -256,7 +259,9 @@ public class PositionActivity extends Activity {
 				} catch (Exception e) {
 					// Handle when scan QR code which is not our form
 					showLastMapData();
-					pointTitle.setText("QR code error!");
+					//pointTitle.setText("QR code error!");
+					pointTitle.setText(contents);
+					Log.e("AAAAA", e.toString());
 				}
 
 				// Handle successful scan
@@ -411,7 +416,7 @@ public class PositionActivity extends Activity {
 
 		// String data = "<img src = \"file:///sdcard/somefile.jpg\" />";
 		String data = "<img src = \"file:///sdcard/" + Global.MapDirName + "/"
-				+ mapId + "/" + "map.jpg" + "\" />";
+				+ mapId + "/" + "map" + "\" />";
 
 		final String mimeType = "text/html";
 		final String encoding = "utf-8";
@@ -491,8 +496,10 @@ public class PositionActivity extends Activity {
 			// Integer.valueOf(Global.PointId)).getJSONArray(
 			// "photos");
 			JSONObject jsonObjCoordObject;
+			//===================================================================
 			jsonObjCoordObject = jsonObjArray.getJSONObject(Integer
 					.valueOf(Global.PointId));
+			//===================================================================
 			String title = jsonObjCoordObject.getString("title");
 			String desc = jsonObjCoordObject.getString("description");
 

@@ -9,6 +9,7 @@ import ntu.com.google.zxing.client.android.R;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.R.color;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
@@ -195,7 +196,7 @@ public class MyWebView extends WebView {
 			float r = pointR; // * getScale();
 			//
 			Paint p = new Paint();
-
+//p.setColor(Color.RED);
 			for (int i = 0; i < jsonObjArray.length(); i++) {
 				float xx = x[i] * getScale();
 				float yy = y[i] * getScale();
