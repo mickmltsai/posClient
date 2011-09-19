@@ -16,7 +16,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import ntu.com.google.zxing.client.android.R;
-import android.R.integer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -33,7 +32,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 public class PositionActivity extends Activity {
@@ -51,16 +49,13 @@ public class PositionActivity extends Activity {
 	private Thread thread;
 	private ProgressDialog waitDownDialog;
 
-	// public enum mapKey {
-	// mapID, mapVer, title, map
-	// }
-
 	// Use for download handler message code
 	private interface messageCode {
 		public static final int DOWNLOAD_OK = 0;
 		public static final int DOWNLOAD_FAILED = 1;
 	}
 
+	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +65,7 @@ public class PositionActivity extends Activity {
 		findViews();
 		setListeners();
 		makeRootDir();
-		//showLastMapData();
+		// showLastMapData();
 		startScan();
 
 	}
@@ -110,14 +105,14 @@ public class PositionActivity extends Activity {
 		if (requestCode == 0) {
 			if (resultCode == RESULT_OK) {
 				String contents = intent.getStringExtra("SCAN_RESULT");
-				String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
+				//String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
 				Boolean isNeedUpdate;
 
 				try {
 					String[] contentArray = contents.split("\\?");
 					String[] contentPart = contentArray[1].split("&");
 
-					// Assign value
+					//Parse QR code content and assign value
 					jsonURL = contents;
 
 					String[] tmp = contentPart[0].split("=");
@@ -155,10 +150,10 @@ public class PositionActivity extends Activity {
 
 								try {
 									// Test URL (real = jsonURL)
-//									downloadMapJson(mapID,
-//											"http://dl.dropbox.com/u/22034772/example.json");
-									downloadMapJson(mapID,jsonURL);
-									
+									// downloadMapJson(mapID,
+									// "http://dl.dropbox.com/u/22034772/example.json");
+									downloadMapJson(mapID, jsonURL);
+
 									// Test only download map img
 									File SD = Environment
 											.getExternalStorageDirectory();
@@ -180,10 +175,10 @@ public class PositionActivity extends Activity {
 											jsonString);
 									String map = jsonObj.getString("map");
 									DownloadHelper downloader = new DownloadHelper();
-									//======================================================================================
+									// ======================================================================================
 									downloader.downFile(map, Global.MapDirRoot
 											+ "/" + mapID, "map");
-									//======================================================================================
+									// ======================================================================================
 									handler.sendEmptyMessage(messageCode.DOWNLOAD_OK);
 								} catch (MalformedURLException e) {
 									e.printStackTrace();
@@ -220,10 +215,10 @@ public class PositionActivity extends Activity {
 						// Integer.valueOf(Global.PointId)).getJSONArray(
 						// "photos");
 						JSONObject jsonObjCoordObject;
-//=================================================================================================
+						// =================================================================================================
 						jsonObjCoordObject = jsonObjArray.getJSONObject(Integer
 								.valueOf(Global.PointId));
-//=================================================================================================
+						// =================================================================================================
 						String title = jsonObjCoordObject.getString("title");
 						String desc = jsonObjCoordObject
 								.getString("description");
@@ -259,7 +254,7 @@ public class PositionActivity extends Activity {
 				} catch (Exception e) {
 					// Handle when scan QR code which is not our form
 					showLastMapData();
-					//pointTitle.setText("QR code error!");
+					// pointTitle.setText("QR code error!");
 					pointTitle.setText(contents);
 					Log.e("AAAAA", e.toString());
 				}
@@ -496,10 +491,10 @@ public class PositionActivity extends Activity {
 			// Integer.valueOf(Global.PointId)).getJSONArray(
 			// "photos");
 			JSONObject jsonObjCoordObject;
-			//===================================================================
+			// ===================================================================
 			jsonObjCoordObject = jsonObjArray.getJSONObject(Integer
 					.valueOf(Global.PointId));
-			//===================================================================
+			// ===================================================================
 			String title = jsonObjCoordObject.getString("title");
 			String desc = jsonObjCoordObject.getString("description");
 
@@ -540,8 +535,7 @@ public class PositionActivity extends Activity {
 				new DialogInterface.OnClickListener() {
 
 					@Override
-					public void onClick(DialogInterface dialog,
-							int which) {
+					public void onClick(DialogInterface dialog, int which) {
 
 					}
 				});
