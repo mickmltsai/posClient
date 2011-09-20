@@ -32,7 +32,7 @@ import android.widget.Toast;
 
 public class MyWebView extends WebView {
 
-	float pointR = 30;
+	float pointR = 23;
 	Context c;
 
 	AlertDialog.Builder test;
@@ -44,8 +44,7 @@ public class MyWebView extends WebView {
 		super(context, attrs);
 		c = context;
 		this.setClickable(true);
-		
-		
+
 	}
 
 	@Override
@@ -97,12 +96,12 @@ public class MyWebView extends WebView {
 					float tx1 = (getScrollX() + event.getX()) / getScale();
 					float ty1 = (getScrollY() + event.getY()) / getScale();
 
-					float cr = pointR / getScale();
+					float cr = pointR *pointR * getScale();
 					for (int i = 0; i < jsonObjArray.length(); i++) {
-						float d = (tx1 - x[i]) * (tx1 - x[i]) + (ty1 - y[i])
-								* (ty1 - y[i]);
-						float sr = 0.5f;
-						d = (float) Math.pow(d, sr);
+						float d = ((tx1 - (x[i])) * (tx1 - (x[i])) + (ty1 - (y[i]-35))
+								* (ty1 - (y[i]-35)))* getScale();
+						//float sr = 0.5f;
+						//d = (float) Math.pow(d, sr);
 
 						if (d <= cr) {
 							// Toast.makeText(c, "test", Toast.LENGTH_SHORT)
@@ -114,13 +113,13 @@ public class MyWebView extends WebView {
 
 							Builder testt;
 							testt = new AlertDialog.Builder(c);
-//							 testt.setMessage(jsonObjArray.getJSONObject(i)
-//							 .getString("description"));
+							// testt.setMessage(jsonObjArray.getJSONObject(i)
+							// .getString("description"));
 							testt.setTitle(
 									jsonObjArray.getJSONObject(i).getString(
 											"title"))
 									.setPositiveButton(
-											"OK",
+											"½T»{",
 											new DialogInterface.OnClickListener() {
 
 												@Override
@@ -141,7 +140,7 @@ public class MyWebView extends WebView {
 									.getString("description"));
 
 							testt.show();
-
+							break;
 						}
 
 					}
@@ -202,40 +201,37 @@ public class MyWebView extends WebView {
 			float r = pointR; // * getScale();
 			//
 			Paint p = new Paint();
-//p.setColor(Color.RED);
-			
+			// p.setColor(Color.RED);
+
 			Matrix m = new Matrix();
 			JSONObject jsonObjCoordObject;
 			Bitmap b;
+			m.postScale(getScale(), getScale());
 			for (int i = 0; i < jsonObjArray.length(); i++) {
 				float xx = x[i] * getScale();
 				float yy = y[i] * getScale();
-				
-				
-
 
 				jsonObjCoordObject = jsonObjArray.getJSONObject(i);
 
-					if (jsonObjCoordObject.getString("pointID").equals(
-							Global.PointId)) {
-						
-						pin = BitmapFactory.decodeResource(getResources(), R.drawable.marker_blue);
-	
-					}else{
-						pin = BitmapFactory.decodeResource(getResources(), R.drawable.marker_pink);
-						 
-					}
-				
-				
-					b = Bitmap.createBitmap(pin, 0, 0, pin.getWidth(),
-							pin.getHeight(), m, true);
-				
-				//m.postScale(getScale(), getScale());
-				
-				
-				canvas.drawBitmap(b, xx, yy, null);
-				
-				//canvas.drawCircle(xx, yy, r, p);
+				if (jsonObjCoordObject.getString("pointID").equals(
+						Global.PointId)) {
+
+					pin = BitmapFactory.decodeResource(getResources(),
+							R.drawable.marker_blue);
+
+				} else {
+					pin = BitmapFactory.decodeResource(getResources(),
+							R.drawable.marker_pink);
+
+				}
+
+				b = Bitmap.createBitmap(pin, 0, 0, pin.getWidth(),
+						pin.getHeight(), m, true);
+				// ====================================================================================================
+				canvas.drawBitmap(b, xx - 12 * getScale(),
+						yy - 55 * getScale(), null);
+				// ====================================================================================================
+				// canvas.drawCircle(xx, yy, r, p);
 
 			}
 

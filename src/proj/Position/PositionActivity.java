@@ -64,6 +64,8 @@ public class PositionActivity extends Activity {
 		findViews();
 		setListeners();
 		makeRootDir();
+		pointTitle.setTextColor(Color.RED);
+		pointTitle.setTextSize(35);
 		// showLastMapData();
 		startScan();
 
@@ -124,8 +126,6 @@ public class PositionActivity extends Activity {
 					title = tmp[1];
 
 					// Show title
-					pointTitle.setTextColor(Color.RED);
-					pointTitle.setTextSize(20);
 					pointTitle.setText(title);
 
 					// Assign point id to global variable
@@ -138,8 +138,8 @@ public class PositionActivity extends Activity {
 					if (isNeedUpdate) {
 						waitDownDialog = new ProgressDialog(
 								PositionActivity.this);
-						waitDownDialog.setTitle("Downloading...");
-						waitDownDialog.setMessage("Please wait!");
+						waitDownDialog.setTitle("下載中!");
+						waitDownDialog.setMessage("請稍等...");
 						waitDownDialog.show();
 						// Start download Json file if need
 						thread = new Thread(new Runnable() {
@@ -229,8 +229,9 @@ public class PositionActivity extends Activity {
 						// "photos");
 						JSONObject jsonObjCoordObject;
 						// =================================================================================================
-						String title = null;
-						String desc = null;
+						String title = "";
+						String desc = "";
+						Boolean tag=false;
 						for (int i = 0; i < jsonObjArray.length(); i++) {
 
 							jsonObjCoordObject = jsonObjArray.getJSONObject(i);
@@ -241,6 +242,8 @@ public class PositionActivity extends Activity {
 								title = jsonObjCoordObject.getString("title");
 								desc = jsonObjCoordObject
 										.getString("description");
+								tag = true;
+								break;
 							}
 						}
 
@@ -252,9 +255,19 @@ public class PositionActivity extends Activity {
 
 						Builder gg = new AlertDialog.Builder(
 								PositionActivity.this);
-						gg.setTitle(title);
-						// gg.setMessage(desc);
-						gg.setPositiveButton("OK",
+						TextView titlet = (TextView) v1.findViewById(R.id.ttt);
+						if (tag) {
+							gg.setTitle(title);
+							// gg.setMessage(desc);
+
+							titlet.setText(desc);
+							
+						}else {
+							gg.setTitle("抱歉");
+							titlet.setText("此位置已被刪除!");
+						}
+						
+						gg.setPositiveButton("確認",
 								new DialogInterface.OnClickListener() {
 
 									@Override
@@ -264,12 +277,11 @@ public class PositionActivity extends Activity {
 
 									}
 								});
-						TextView titlet = (TextView) v1.findViewById(R.id.ttt);
+						
+						
 						titlet.setTextSize(20);
 						titlet.setTextColor(Color.YELLOW);
-						titlet.setText(desc);
 						gg.setView(v1);
-
 						gg.show();
 
 					}
@@ -278,8 +290,7 @@ public class PositionActivity extends Activity {
 					// Handle when scan QR code which is not our form
 					showLastMapData();
 					// pointTitle.setText("QR code error!");
-					pointTitle.setText(contents);
-					Log.e("AAAAA", e.toString());
+					pointTitle.setText("條碼錯誤!");
 				}
 
 				// Handle successful scan
@@ -290,9 +301,9 @@ public class PositionActivity extends Activity {
 				// map)
 				Builder scanCancelDialog = new AlertDialog.Builder(
 						PositionActivity.this);
-				scanCancelDialog.setMessage("Scan canceled");
-				scanCancelDialog.setTitle("Scan canceled").setPositiveButton(
-						"OK", new DialogInterface.OnClickListener() {
+				scanCancelDialog.setMessage("請按確認繼續...");
+				scanCancelDialog.setTitle("掃描取消!").setPositiveButton(
+						"確認", new DialogInterface.OnClickListener() {
 
 							@Override
 							public void onClick(DialogInterface dialog,
@@ -471,19 +482,19 @@ public class PositionActivity extends Activity {
 			String mapId = jsonObj.getString("mapID");
 
 			showMapData(mapId);
-			pointTitle.setText("Last map data!");
+			pointTitle.setText("最近的地圖!");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			pointTitle.setText("No last map data!(FileNotFoundException)");
+			pointTitle.setText("沒有最近的地圖!");
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			pointTitle.setText("No last map data!(JSONException)");
+			pointTitle.setText("沒有最近的地圖!");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			pointTitle.setText("No last map data!(IOException)");
+			pointTitle.setText("沒有最近的地圖!");
 		}
 
 	}
@@ -517,8 +528,8 @@ public class PositionActivity extends Activity {
 			// ===================================================================
 			
 			// ===================================================================
-			String title = null;
-			String desc = null;
+			String title = "";
+			String desc = "";
 			for (int i = 0; i < jsonObjArray.length(); i++) {
 
 				jsonObjCoordObject = jsonObjArray.getJSONObject(i);
@@ -568,8 +579,8 @@ public class PositionActivity extends Activity {
 		// Show failed dialog when download failed
 		waitDownDialog.dismiss();
 		Builder ggg = new AlertDialog.Builder(PositionActivity.this);
-		ggg.setMessage("Download failed!");
-		ggg.setTitle("Download failed!").setPositiveButton("OK",
+		ggg.setMessage("請按確認繼續...");
+		ggg.setTitle("下載失敗!").setPositiveButton("確認",
 				new DialogInterface.OnClickListener() {
 
 					@Override

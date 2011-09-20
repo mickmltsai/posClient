@@ -5,6 +5,6 @@
     android:layout_height="fill_parent"
     android:weightSum="1">
     <TextView android:text="Plain text" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/plainText" android:layout_gravity="center_horizontal"></TextView>
-<Button android:layout_height="wrap_content" android:id="@+id/scan" android:layout_width="match_parent" android:text="Scan again"></Button>
+<Button android:layout_height="wrap_content" android:id="@+id/scan" android:layout_width="match_parent" android:text="重新掃描" android:textSize="25dp"></Button>
 <proj.Position.MyWebView android:layout_height="match_parent" android:layout_width="match_parent" android:id="@+id/myWebView1"></proj.Position.MyWebView>
 </LinearLayout>
