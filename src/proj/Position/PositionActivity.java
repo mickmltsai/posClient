@@ -155,12 +155,12 @@ public class PositionActivity extends Activity {
 									downloadMapJson(mapID, jsonURL);
 
 									// Test only download map img
-									File SD = Environment
+									File SDCardRoot = Environment
 											.getExternalStorageDirectory();
-									File test = new File(SD
+									File jsonFile = new File(SDCardRoot
 											+ "/Position/last.json");
 
-									FileReader in = new FileReader(test);
+									FileReader in = new FileReader(jsonFile);
 									BufferedReader stdin = new BufferedReader(
 											in);
 
@@ -173,12 +173,21 @@ public class PositionActivity extends Activity {
 
 									JSONObject jsonObj = new JSONObject(
 											jsonString);
+									
+//									JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon("Position/last.json"));
+									
+									
 									String map = jsonObj.getString("map");
 									DownloadHelper downloader = new DownloadHelper();
 									// ======================================================================================
 									downloader.downFile(map, Global.MapDirRoot
-											+ "/" + mapID, "map");
+											+ "/" + mapID, "map.jpg");
 									// ======================================================================================
+									//==================================
+									
+									//Download point's imgs
+									
+									//==================================
 									handler.sendEmptyMessage(messageCode.DOWNLOAD_OK);
 								} catch (MalformedURLException e) {
 									e.printStackTrace();
@@ -411,7 +420,7 @@ public class PositionActivity extends Activity {
 
 		// String data = "<img src = \"file:///sdcard/somefile.jpg\" />";
 		String data = "<img src = \"file:///sdcard/" + Global.MapDirName + "/"
-				+ mapId + "/" + "map" + "\" />";
+				+ mapId + "/" + "map.jpg" + "\" />";
 
 		final String mimeType = "text/html";
 		final String encoding = "utf-8";
@@ -542,6 +551,10 @@ public class PositionActivity extends Activity {
 		ggg.show();
 	}
 
+	private void cleanFailFile() {
+		
+	}
+	
 	private Handler handler = new Handler() {
 		Boolean isOldMapData;
 
