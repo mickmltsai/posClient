@@ -55,7 +55,6 @@ public class PositionActivity extends Activity {
 		public static final int DOWNLOAD_FAILED = 1;
 	}
 
-	
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -105,15 +104,15 @@ public class PositionActivity extends Activity {
 		if (requestCode == 0) {
 			if (resultCode == RESULT_OK) {
 				String contents = intent.getStringExtra("SCAN_RESULT");
-				//String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
+				// String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
 				Boolean isNeedUpdate;
 
 				try {
 					String[] contentArray = contents.split("\\?");
 					String[] contentPart = contentArray[1].split("&");
 
-					//Parse QR code content and assign value
-					jsonURL = contents;
+					// Parse QR code content and assign value
+					jsonURL = contents + "&from=client";
 
 					String[] tmp = contentPart[0].split("=");
 					mapID = tmp[1];
@@ -173,21 +172,21 @@ public class PositionActivity extends Activity {
 
 									JSONObject jsonObj = new JSONObject(
 											jsonString);
-									
-//									JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon("Position/last.json"));
-									
-									
+
+									// JSONObject jsonObj = new
+									// JSONObject(JsonParser.getJsonRespon("Position/last.json"));
+
 									String map = jsonObj.getString("map");
 									DownloadHelper downloader = new DownloadHelper();
 									// ======================================================================================
 									downloader.downFile(map, Global.MapDirRoot
 											+ "/" + mapID, "map.jpg");
 									// ======================================================================================
-									//==================================
-									
-									//Download point's imgs
-									
-									//==================================
+									// ==================================
+
+									// Download point's imgs
+
+									// ==================================
 									handler.sendEmptyMessage(messageCode.DOWNLOAD_OK);
 								} catch (MalformedURLException e) {
 									e.printStackTrace();
@@ -552,9 +551,9 @@ public class PositionActivity extends Activity {
 	}
 
 	private void cleanFailFile() {
-		
+
 	}
-	
+
 	private Handler handler = new Handler() {
 		Boolean isOldMapData;
 
