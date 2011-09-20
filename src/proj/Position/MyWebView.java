@@ -14,8 +14,11 @@ import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.Environment;
 import android.util.AttributeSet;
@@ -33,6 +36,7 @@ public class MyWebView extends WebView {
 	Context c;
 
 	AlertDialog.Builder test;
+	Bitmap pin;
 
 	public MyWebView(Context context, AttributeSet attrs) {
 		// TODO Auto-generated constructor stub
@@ -40,6 +44,8 @@ public class MyWebView extends WebView {
 		super(context, attrs);
 		c = context;
 		this.setClickable(true);
+		
+		
 	}
 
 	@Override
@@ -197,10 +203,39 @@ public class MyWebView extends WebView {
 			//
 			Paint p = new Paint();
 //p.setColor(Color.RED);
+			
+			Matrix m = new Matrix();
+			JSONObject jsonObjCoordObject;
+			Bitmap b;
 			for (int i = 0; i < jsonObjArray.length(); i++) {
 				float xx = x[i] * getScale();
 				float yy = y[i] * getScale();
-				canvas.drawCircle(xx, yy, r, p);
+				
+				
+
+
+				jsonObjCoordObject = jsonObjArray.getJSONObject(i);
+
+					if (jsonObjCoordObject.getString("pointID").equals(
+							Global.PointId)) {
+						
+						pin = BitmapFactory.decodeResource(getResources(), R.drawable.marker_blue);
+	
+					}else{
+						pin = BitmapFactory.decodeResource(getResources(), R.drawable.marker_pink);
+						 
+					}
+				
+				
+					b = Bitmap.createBitmap(pin, 0, 0, pin.getWidth(),
+							pin.getHeight(), m, true);
+				
+				//m.postScale(getScale(), getScale());
+				
+				
+				canvas.drawBitmap(b, xx, yy, null);
+				
+				//canvas.drawCircle(xx, yy, r, p);
 
 			}
 

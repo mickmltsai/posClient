@@ -200,6 +200,11 @@ public class PositionActivity extends Activity {
 						});
 						thread.start();
 					} else {
+						
+						//Do follow by handler.sendEmptyMessage(messageCode.DOWNLOAD_OK); ??
+						//But waitDownDialog.dismiss(); in scanResultOk() !!
+						
+						
 						showMapData(mapID);
 
 						File SD = Environment.getExternalStorageDirectory();
@@ -224,12 +229,22 @@ public class PositionActivity extends Activity {
 						// "photos");
 						JSONObject jsonObjCoordObject;
 						// =================================================================================================
-						jsonObjCoordObject = jsonObjArray.getJSONObject(Integer
-								.valueOf(Global.PointId));
+						String title = null;
+						String desc = null;
+						for (int i = 0; i < jsonObjArray.length(); i++) {
+
+							jsonObjCoordObject = jsonObjArray.getJSONObject(i);
+
+							if (jsonObjCoordObject.getString("pointID").equals(
+									Global.PointId)) {
+
+								title = jsonObjCoordObject.getString("title");
+								desc = jsonObjCoordObject
+										.getString("description");
+							}
+						}
+
 						// =================================================================================================
-						String title = jsonObjCoordObject.getString("title");
-						String desc = jsonObjCoordObject
-								.getString("description");
 
 						LayoutInflater factory = LayoutInflater.from(this);
 						final View v1 = factory.inflate(R.layout.contentview,
@@ -500,14 +515,29 @@ public class PositionActivity extends Activity {
 			// "photos");
 			JSONObject jsonObjCoordObject;
 			// ===================================================================
-			jsonObjCoordObject = jsonObjArray.getJSONObject(Integer
-					.valueOf(Global.PointId));
+			
 			// ===================================================================
-			String title = jsonObjCoordObject.getString("title");
-			String desc = jsonObjCoordObject.getString("description");
+			String title = null;
+			String desc = null;
+			for (int i = 0; i < jsonObjArray.length(); i++) {
+
+				jsonObjCoordObject = jsonObjArray.getJSONObject(i);
+
+				if (jsonObjCoordObject.getString("pointID").equals(
+						Global.PointId)) {
+
+					title = jsonObjCoordObject.getString("title");
+					desc = jsonObjCoordObject
+							.getString("description");
+				}
+			}
+
 
 			LayoutInflater factory = LayoutInflater.from(PositionActivity.this);
 			final View v1 = factory.inflate(R.layout.contentview, null);
+			
+			
+			
 
 			Builder gg = new AlertDialog.Builder(PositionActivity.this);
 			gg.setTitle(title);
