@@ -5,26 +5,27 @@ import java.io.File;
 import java.io.FileReader;
 
 import android.os.Environment;
+import android.util.Log;
 
 public class JsonParser {
 
 	private final static File SDCardRoot = Environment
 			.getExternalStorageDirectory();
-	private static String oldJsonPath = null;
-	private static String jsonString = null;
+	private static String oldJsonPath = "";
+	public static String jsonString = "";
 
 	public static String getJsonRespon(String jsonPath) {
 
 		if (jsonPath.equals(oldJsonPath)) {
 			// Return the previous Json string if they equal
-			return oldJsonPath;
+			return jsonString;
 
 		} else {
 
 			try {
 
 				File jsonFile = new File(SDCardRoot + "/" + jsonPath);
-				oldJsonPath = SDCardRoot + "/" + jsonPath;
+				oldJsonPath = "/" + jsonPath;
 
 				FileReader in = new FileReader(jsonFile);
 				BufferedReader stdin = new BufferedReader(in);
@@ -34,9 +35,7 @@ public class JsonParser {
 					jsonString = jsonString + jsonString1;
 				}
 				in.close();
-
 				return jsonString;
-
 			} catch (Exception e) {
 				// TODO: handle exception
 			}

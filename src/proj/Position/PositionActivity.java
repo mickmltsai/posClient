@@ -141,7 +141,7 @@ public class PositionActivity extends Activity {
 						waitDownDialog.setTitle("下載中!");
 						waitDownDialog.setMessage("請稍等...");
 						waitDownDialog.show();
-						// Start download Json file if need
+						// Start download Json file
 						thread = new Thread(new Runnable() {
 							// @Override
 							public void run() {
@@ -154,24 +154,25 @@ public class PositionActivity extends Activity {
 									downloadMapJson(mapID, jsonURL);
 
 									// Test only download map img
-									File SDCardRoot = Environment
-											.getExternalStorageDirectory();
-									File jsonFile = new File(SDCardRoot
-											+ "/Position/last.json");
+//									File SDCardRoot = Environment
+//											.getExternalStorageDirectory();
+//									File jsonFile = new File(SDCardRoot
+//											+ "/Position/last.json");
 
-									FileReader in = new FileReader(jsonFile);
-									BufferedReader stdin = new BufferedReader(
-											in);
-
-									String jsonString = "";
-									String jsonString1 = null;
-									while (((jsonString1 = stdin.readLine()) != null)) {
-										jsonString = jsonString + jsonString1;
-									}
-									in.close();
+									//FileReader in = new FileReader(jsonFile);
+//									FileReader in = new FileReader(JsonParser.getJsonRespon("Position/last.json"));
+//									BufferedReader stdin = new BufferedReader(
+//											in);
+//
+//									String jsonString = "";
+//									String jsonString1 = null;
+//									while (((jsonString1 = stdin.readLine()) != null)) {
+//										jsonString = jsonString + jsonString1;
+//									}
+//									in.close();
 
 									JSONObject jsonObj = new JSONObject(
-											jsonString);
+											JsonParser.getJsonRespon("Position/last.json"));
 
 									// JSONObject jsonObj = new
 									// JSONObject(JsonParser.getJsonRespon("Position/last.json"));
@@ -200,11 +201,11 @@ public class PositionActivity extends Activity {
 						});
 						thread.start();
 					} else {
-						
-						//Do follow by handler.sendEmptyMessage(messageCode.DOWNLOAD_OK); ??
-						//But waitDownDialog.dismiss(); in scanResultOk() !!
-						
-						
+
+						// Do follow by
+						// handler.sendEmptyMessage(messageCode.DOWNLOAD_OK); ??
+						// But waitDownDialog.dismiss(); in scanResultOk() !!
+
 						showMapData(mapID);
 
 						File SD = Environment.getExternalStorageDirectory();
@@ -231,7 +232,7 @@ public class PositionActivity extends Activity {
 						// =================================================================================================
 						String title = "";
 						String desc = "";
-						Boolean tag=false;
+						Boolean tag = false;
 						for (int i = 0; i < jsonObjArray.length(); i++) {
 
 							jsonObjCoordObject = jsonObjArray.getJSONObject(i);
@@ -261,12 +262,12 @@ public class PositionActivity extends Activity {
 							// gg.setMessage(desc);
 
 							titlet.setText(desc);
-							
-						}else {
+
+						} else {
 							gg.setTitle("抱歉");
 							titlet.setText("此位置已被刪除!");
 						}
-						
+
 						gg.setPositiveButton("確認",
 								new DialogInterface.OnClickListener() {
 
@@ -277,8 +278,7 @@ public class PositionActivity extends Activity {
 
 									}
 								});
-						
-						
+
 						titlet.setTextSize(20);
 						titlet.setTextColor(Color.YELLOW);
 						gg.setView(v1);
@@ -302,8 +302,8 @@ public class PositionActivity extends Activity {
 				Builder scanCancelDialog = new AlertDialog.Builder(
 						PositionActivity.this);
 				scanCancelDialog.setMessage("請按確認繼續...");
-				scanCancelDialog.setTitle("掃描取消!").setPositiveButton(
-						"確認", new DialogInterface.OnClickListener() {
+				scanCancelDialog.setTitle("掃描取消!").setPositiveButton("確認",
+						new DialogInterface.OnClickListener() {
 
 							@Override
 							public void onClick(DialogInterface dialog,
@@ -431,6 +431,32 @@ public class PositionActivity extends Activity {
 
 	private void showMapData(String mapId) {
 
+		File SDCardRoot = Environment.getExternalStorageDirectory();
+		// Copy last downloaded JSON file in to map dir root
+		File abc = new File(SDCardRoot + "/" + Global.MapDirRoot + "/" + mapId
+				+ "/" + mapId + ".json");
+		File dstFile = new File(SDCardRoot + "/" + Global.MapDirRoot + "/"
+				+ "last.json");
+
+		try {
+
+			BufferedInputStream in = new BufferedInputStream(
+					new FileInputStream(abc));
+			BufferedOutputStream out = new BufferedOutputStream(
+					new FileOutputStream(dstFile));
+
+			byte[] tmp = new byte[1024];
+
+			while (in.read(tmp) != -1) {
+				out.write(tmp);
+			}
+			in.close();
+			out.close();
+		} catch (Exception e) {
+			// TODO: handle exception
+			pointTitle.setText("showMapData error!");
+		}
+
 		// Enable to zoom in/out
 
 		mapView.getSettings().setBuiltInZoomControls(true);
@@ -526,7 +552,7 @@ public class PositionActivity extends Activity {
 			// "photos");
 			JSONObject jsonObjCoordObject;
 			// ===================================================================
-			
+
 			// ===================================================================
 			String title = "";
 			String desc = "";
@@ -538,17 +564,12 @@ public class PositionActivity extends Activity {
 						Global.PointId)) {
 
 					title = jsonObjCoordObject.getString("title");
-					desc = jsonObjCoordObject
-							.getString("description");
+					desc = jsonObjCoordObject.getString("description");
 				}
 			}
 
-
 			LayoutInflater factory = LayoutInflater.from(PositionActivity.this);
 			final View v1 = factory.inflate(R.layout.contentview, null);
-			
-			
-			
 
 			Builder gg = new AlertDialog.Builder(PositionActivity.this);
 			gg.setTitle(title);
