@@ -136,8 +136,7 @@ public class PositionActivity extends Activity {
 
 					// Need to Update
 					if (isNeedUpdate) {
-						waitDownDialog = new ProgressDialog(
-								PositionActivity.this);
+						waitDownDialog = new ProgressDialog(PositionActivity.this);
 						waitDownDialog.setTitle("下載中!");
 						waitDownDialog.setMessage("請稍等...");
 						waitDownDialog.show();
@@ -154,25 +153,27 @@ public class PositionActivity extends Activity {
 									downloadMapJson(mapID, jsonURL);
 
 									// Test only download map img
-//									File SDCardRoot = Environment
-//											.getExternalStorageDirectory();
-//									File jsonFile = new File(SDCardRoot
-//											+ "/Position/last.json");
+									// File SDCardRoot = Environment
+									// .getExternalStorageDirectory();
+									// File jsonFile = new File(SDCardRoot
+									// + "/Position/last.json");
 
-									//FileReader in = new FileReader(jsonFile);
-//									FileReader in = new FileReader(JsonParser.getJsonRespon("Position/last.json"));
-//									BufferedReader stdin = new BufferedReader(
-//											in);
-//
-//									String jsonString = "";
-//									String jsonString1 = null;
-//									while (((jsonString1 = stdin.readLine()) != null)) {
-//										jsonString = jsonString + jsonString1;
-//									}
-//									in.close();
+									// FileReader in = new FileReader(jsonFile);
+									// FileReader in = new
+									// FileReader(JsonParser.getJsonRespon("Position/last.json"));
+									// BufferedReader stdin = new
+									// BufferedReader(
+									// in);
+									//
+									// String jsonString = "";
+									// String jsonString1 = null;
+									// while (((jsonString1 = stdin.readLine())
+									// != null)) {
+									// jsonString = jsonString + jsonString1;
+									// }
+									// in.close();
 
-									JSONObject jsonObj = new JSONObject(
-											JsonParser.getJsonRespon("Position/last.json"));
+									JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon("Position/last.json"));
 
 									// JSONObject jsonObj = new
 									// JSONObject(JsonParser.getJsonRespon("Position/last.json"));
@@ -180,8 +181,7 @@ public class PositionActivity extends Activity {
 									String map = jsonObj.getString("map");
 									DownloadHelper downloader = new DownloadHelper();
 									// ======================================================================================
-									downloader.downFile(map, Global.MapDirRoot
-											+ "/" + mapID, "map.jpg");
+									downloader.downFile(map, Global.MapDirRoot + "/" + mapID, "map.jpg");
 									// ======================================================================================
 									// ==================================
 
@@ -209,8 +209,7 @@ public class PositionActivity extends Activity {
 						showMapData(mapID);
 
 						File SD = Environment.getExternalStorageDirectory();
-						File test = new File(SD + "/Position/" + mapID + "/"
-								+ mapID + ".json");
+						File test = new File(SD + "/Position/" + mapID + "/" + mapID + ".json");
 
 						FileReader in = new FileReader(test);
 						BufferedReader stdin = new BufferedReader(in);
@@ -237,12 +236,10 @@ public class PositionActivity extends Activity {
 
 							jsonObjCoordObject = jsonObjArray.getJSONObject(i);
 
-							if (jsonObjCoordObject.getString("pointID").equals(
-									Global.PointId)) {
+							if (jsonObjCoordObject.getString("pointID").equals(Global.PointId)) {
 
 								title = jsonObjCoordObject.getString("title");
-								desc = jsonObjCoordObject
-										.getString("description");
+								desc = jsonObjCoordObject.getString("description");
 								tag = true;
 								break;
 							}
@@ -251,11 +248,9 @@ public class PositionActivity extends Activity {
 						// =================================================================================================
 
 						LayoutInflater factory = LayoutInflater.from(this);
-						final View v1 = factory.inflate(R.layout.contentview,
-								null);
+						final View v1 = factory.inflate(R.layout.contentview, null);
 
-						Builder gg = new AlertDialog.Builder(
-								PositionActivity.this);
+						Builder gg = new AlertDialog.Builder(PositionActivity.this);
 						TextView titlet = (TextView) v1.findViewById(R.id.ttt);
 						if (tag) {
 							gg.setTitle(title);
@@ -268,16 +263,14 @@ public class PositionActivity extends Activity {
 							titlet.setText("此位置已被刪除!");
 						}
 
-						gg.setPositiveButton("確認",
-								new DialogInterface.OnClickListener() {
+						gg.setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										// TODO Auto-generated method stub
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								// TODO Auto-generated method stub
 
-									}
-								});
+							}
+						});
 
 						titlet.setTextSize(20);
 						titlet.setTextColor(Color.YELLOW);
@@ -299,19 +292,16 @@ public class PositionActivity extends Activity {
 
 				// Show AlertDialog for temporarily handle (Need to show last
 				// map)
-				Builder scanCancelDialog = new AlertDialog.Builder(
-						PositionActivity.this);
+				Builder scanCancelDialog = new AlertDialog.Builder(PositionActivity.this);
 				scanCancelDialog.setMessage("請按確認繼續...");
-				scanCancelDialog.setTitle("掃描取消!").setPositiveButton("確認",
-						new DialogInterface.OnClickListener() {
+				scanCancelDialog.setTitle("掃描取消!").setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								// TODO Auto-generated method stub
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
 
-							}
-						});
+					}
+				});
 				scanCancelDialog.show();
 
 				// Show last map data
@@ -343,8 +333,7 @@ public class PositionActivity extends Activity {
 		return looker.look(Global.MapDirRoot, mapId);
 	}
 
-	private void downloadMapJson(String mapId, String downHttpUrl)
-			throws IOException {
+	private void downloadMapJson(String mapId, String downHttpUrl) throws IOException {
 		// Download the JSON file
 
 		DownloadHelper downloader = new DownloadHelper();
@@ -353,19 +342,14 @@ public class PositionActivity extends Activity {
 		MakeDirHelper def = new MakeDirHelper();
 		def.make(Global.MapDirRoot, mapId);
 
-		downloader.downFile(downHttpUrl, Global.MapDirRoot + "/" + mapId, mapId
-				+ ".json");
+		downloader.downFile(downHttpUrl, Global.MapDirRoot + "/" + mapId, mapId + ".json");
 
 		// Copy last downloaded JSON file in to map dir root
-		File abc = new File(SDCardRoot + "/" + Global.MapDirRoot + "/" + mapId
-				+ "/" + mapId + ".json");
-		File dstFile = new File(SDCardRoot + "/" + Global.MapDirRoot + "/"
-				+ "last.json");
+		File abc = new File(SDCardRoot + "/" + Global.MapDirRoot + "/" + mapId + "/" + mapId + ".json");
+		File dstFile = new File(SDCardRoot + "/" + Global.MapDirRoot + "/" + "last.json");
 
-		BufferedInputStream in = new BufferedInputStream(new FileInputStream(
-				abc));
-		BufferedOutputStream out = new BufferedOutputStream(
-				new FileOutputStream(dstFile));
+		BufferedInputStream in = new BufferedInputStream(new FileInputStream(abc));
+		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(dstFile));
 
 		byte[] tmp = new byte[1024];
 
@@ -433,17 +417,13 @@ public class PositionActivity extends Activity {
 
 		File SDCardRoot = Environment.getExternalStorageDirectory();
 		// Copy last downloaded JSON file in to map dir root
-		File abc = new File(SDCardRoot + "/" + Global.MapDirRoot + "/" + mapId
-				+ "/" + mapId + ".json");
-		File dstFile = new File(SDCardRoot + "/" + Global.MapDirRoot + "/"
-				+ "last.json");
+		File abc = new File(SDCardRoot + "/" + Global.MapDirRoot + "/" + mapId + "/" + mapId + ".json");
+		File dstFile = new File(SDCardRoot + "/" + Global.MapDirRoot + "/" + "last.json");
 
 		try {
 
-			BufferedInputStream in = new BufferedInputStream(
-					new FileInputStream(abc));
-			BufferedOutputStream out = new BufferedOutputStream(
-					new FileOutputStream(dstFile));
+			BufferedInputStream in = new BufferedInputStream(new FileInputStream(abc));
+			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(dstFile));
 
 			byte[] tmp = new byte[1024];
 
@@ -470,8 +450,7 @@ public class PositionActivity extends Activity {
 		// "<img src = \"http:///indoorposition.appspot.com/image/map.jpg\" />";
 
 		// String data = "<img src = \"file:///sdcard/somefile.jpg\" />";
-		String data = "<img src = \"file:///sdcard/" + Global.MapDirName + "/"
-				+ mapId + "/" + "map.jpg" + "\" />";
+		String data = "<img src = \"file:///sdcard/" + Global.MapDirName + "/" + mapId + "/" + "map.jpg" + "\" />";
 
 		final String mimeType = "text/html";
 		final String encoding = "utf-8";
@@ -489,8 +468,7 @@ public class PositionActivity extends Activity {
 		// Show last Map data if it exists
 
 		File SDCardRoot = Environment.getExternalStorageDirectory();
-		File lastJson = new File(SDCardRoot + "/" + "Position" + "/"
-				+ "last.json");
+		File lastJson = new File(SDCardRoot + "/" + "Position" + "/" + "last.json");
 		FileReader in;
 
 		try {
@@ -560,8 +538,7 @@ public class PositionActivity extends Activity {
 
 				jsonObjCoordObject = jsonObjArray.getJSONObject(i);
 
-				if (jsonObjCoordObject.getString("pointID").equals(
-						Global.PointId)) {
+				if (jsonObjCoordObject.getString("pointID").equals(Global.PointId)) {
 
 					title = jsonObjCoordObject.getString("title");
 					desc = jsonObjCoordObject.getString("description");
@@ -601,14 +578,13 @@ public class PositionActivity extends Activity {
 		waitDownDialog.dismiss();
 		Builder ggg = new AlertDialog.Builder(PositionActivity.this);
 		ggg.setMessage("請按確認繼續...");
-		ggg.setTitle("下載失敗!").setPositiveButton("確認",
-				new DialogInterface.OnClickListener() {
+		ggg.setTitle("下載失敗!").setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
 
-					}
-				});
+			}
+		});
 		ggg.show();
 	}
 

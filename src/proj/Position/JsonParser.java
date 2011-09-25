@@ -9,8 +9,7 @@ import android.util.Log;
 
 public class JsonParser {
 
-	private final static File SDCardRoot = Environment
-			.getExternalStorageDirectory();
+	private final static File SDCardRoot = Environment.getExternalStorageDirectory();
 	private static String oldJsonPath = "";
 	public static String jsonString = "";
 
