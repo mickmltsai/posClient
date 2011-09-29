@@ -25,7 +25,7 @@
 		devices. While it's true that 1D barcodes will not be scannable, QR C will 
 		work. Ideally we'd show users a message to this effect on first launch. -->
 	<uses-feature android:name="android.hardware.camera" />
-	<application android:icon="@drawable/icon" android:label="Position">
+	<application android:icon="@drawable/icon" android:label="標記辨識輔助定位 - 使用者端">
 		<activity android:name=".CaptureActivity"
 			android:screenOrientation="landscape" android:configChanges="orientation|keyboardHidden"
 			android:theme="@android:style/Theme.NoTitleBar.Fullscreen"

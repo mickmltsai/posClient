@@ -292,6 +292,7 @@ public class PositionActivity extends Activity {
 
 				// Show AlertDialog for temporarily handle (Need to show last
 				// map)
+				/*
 				Builder scanCancelDialog = new AlertDialog.Builder(PositionActivity.this);
 				scanCancelDialog.setMessage("請按確認繼續...");
 				scanCancelDialog.setTitle("掃描取消!").setPositiveButton("確認", new DialogInterface.OnClickListener() {
@@ -303,7 +304,7 @@ public class PositionActivity extends Activity {
 					}
 				});
 				scanCancelDialog.show();
-
+				*/
 				// Show last map data
 				showLastMapData();
 
@@ -345,7 +346,7 @@ public class PositionActivity extends Activity {
 		downloader.downFile(downHttpUrl, Global.MapDirRoot + "/" + mapId, mapId + ".json");
 
 		// Copy last downloaded JSON file in to map dir root
-		File abc = new File(SDCardRoot + "/" + Global.MapDirRoot + "/" + mapId + "/" + mapId + ".json");
+		File abc = new File(SDCardRoot + "/" + Global.MapDirRoot + "/" + mapId + "" + "/" + mapId + ".json");
 		File dstFile = new File(SDCardRoot + "/" + Global.MapDirRoot + "/" + "last.json");
 
 		BufferedInputStream in = new BufferedInputStream(new FileInputStream(abc));
@@ -574,7 +575,7 @@ public class PositionActivity extends Activity {
 	}
 
 	private void scanResultfailed() {
-		// Show failed dialog when download failed
+		// Show failed dialog when download faileds
 		waitDownDialog.dismiss();
 		Builder ggg = new AlertDialog.Builder(PositionActivity.this);
 		ggg.setMessage("請按確認繼續...");
