@@ -142,41 +142,14 @@ public class PositionActivity extends Activity {
 						waitDownDialog.show();
 						// Start download Json file
 						thread = new Thread(new Runnable() {
-							// @Override
+
 							public void run() {
-								// super.run();
 
 								try {
-									// Test URL (real = jsonURL)
-									// downloadMapJson(mapID,
-									// "http://dl.dropbox.com/u/22034772/example.json");
+
 									downloadMapJson(mapID, jsonURL);
 
-									// Test only download map img
-									// File SDCardRoot = Environment
-									// .getExternalStorageDirectory();
-									// File jsonFile = new File(SDCardRoot
-									// + "/Position/last.json");
-
-									// FileReader in = new FileReader(jsonFile);
-									// FileReader in = new
-									// FileReader(JsonParser.getJsonRespon("Position/last.json"));
-									// BufferedReader stdin = new
-									// BufferedReader(
-									// in);
-									//
-									// String jsonString = "";
-									// String jsonString1 = null;
-									// while (((jsonString1 = stdin.readLine())
-									// != null)) {
-									// jsonString = jsonString + jsonString1;
-									// }
-									// in.close();
-
-									JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon("Position/last.json"));
-
-									// JSONObject jsonObj = new
-									// JSONObject(JsonParser.getJsonRespon("Position/last.json"));
+									JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/last.json"));
 
 									String map = jsonObj.getString("map");
 									DownloadHelper downloader = new DownloadHelper();
@@ -293,18 +266,17 @@ public class PositionActivity extends Activity {
 				// Show AlertDialog for temporarily handle (Need to show last
 				// map)
 				/*
-				Builder scanCancelDialog = new AlertDialog.Builder(PositionActivity.this);
-				scanCancelDialog.setMessage("請按確認繼續...");
-				scanCancelDialog.setTitle("掃描取消!").setPositiveButton("確認", new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub
-
-					}
-				});
-				scanCancelDialog.show();
-				*/
+				 * Builder scanCancelDialog = new
+				 * AlertDialog.Builder(PositionActivity.this);
+				 * scanCancelDialog.setMessage("請按確認繼續...");
+				 * scanCancelDialog.setTitle("掃描取消!").setPositiveButton("確認",
+				 * new DialogInterface.OnClickListener() {
+				 * 
+				 * @Override public void onClick(DialogInterface dialog, int
+				 * which) { // TODO Auto-generated method stub
+				 * 
+				 * } }); scanCancelDialog.show();
+				 */
 				// Show last map data
 				showLastMapData();
 

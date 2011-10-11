@@ -4,12 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
-import android.os.Environment;
-import android.util.Log;
-
 public class JsonParser {
 
-	private final static File SDCardRoot = Environment.getExternalStorageDirectory();
 	private static String oldJsonPath = "";
 	public static String jsonString = "";
 
@@ -23,8 +19,8 @@ public class JsonParser {
 
 			try {
 
-				File jsonFile = new File(SDCardRoot + "/" + jsonPath);
-				oldJsonPath = "/" + jsonPath;
+				File jsonFile = new File(jsonPath);
+				oldJsonPath = jsonPath;
 
 				FileReader in = new FileReader(jsonFile);
 				BufferedReader stdin = new BufferedReader(in);

@@ -8,20 +8,16 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import android.app.DownloadManager;
-import android.app.DownloadManager.Request;
-import android.net.Uri;
-import android.os.Environment;
-
 public class DownloadHelper {
-	
-	//Use android manager(2.3) to downlaod  http file 
-	
+
+	// Use android manager(2.3) to downlaod http file (not good!!!!!)
+
 	// for (int i = 0; i < 30; i++) {
 	// DownloadManager dm = (DownloadManager)
 	// getSystemService(DOWNLOAD_SERVICE);
 	// Request request = new Request(
-	// Uri.parse("http://dl.dropbox.com/u/871055/iii.png")); 	Uri.parse("http://i.imgur.com/XBqGN.jpg"));
+	// Uri.parse("http://dl.dropbox.com/u/871055/iii.png"));
+	// Uri.parse("http://i.imgur.com/XBqGN.jpg"));
 	//
 	// Uri uri = Uri
 	// .parse("file:///mnt/sdcard/Position/test" + i + ".png");
@@ -31,16 +27,14 @@ public class DownloadHelper {
 	// dm.enqueue(request);
 	// }
 
-	public void downFile(String downloadURL, String savePath, String fileName)
-			throws IOException, MalformedURLException {
+	public void downFile(String downloadURL, String savePath, String fileName) throws IOException, MalformedURLException {
 
 		// set the download URL, a url that points to a file on the internet
 		// this is the file to be downloaded
 		URL url = new URL(downloadURL);
 
 		// create the new connection
-		HttpURLConnection urlConnection = (HttpURLConnection) url
-				.openConnection();
+		HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
 		// set up some things on the connection
 		urlConnection.setRequestMethod("GET");
@@ -52,10 +46,12 @@ public class DownloadHelper {
 		// set the path where we want to save the file
 		// in this case, going to save it on the root directory of the
 		// sd card.
-		File SDCardRoot = Environment.getExternalStorageDirectory();
+
+		// File SDCardRoot = Environment.getExternalStorageDirectory();
+
 		// create a new file, specifying the path, and the filename
 		// which we want to save the file as.
-		File file = new File(SDCardRoot + savePath, fileName);
+		File file = new File(savePath, fileName);
 
 		// this will be used to write the downloaded data into the file we
 		// created
