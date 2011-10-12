@@ -134,13 +134,19 @@ public class PositionActivity extends Activity {
 					// Check whether it need to download Json file
 					isNeedUpdate = !checkMapVerUpdate(mapID, mapVer);
 
+					// ========================================================================
+					// If want to separate Map img and Json file, separate
+					// mapVer into 2 parts
+					// And separate download thread here (Need to Update...)
+					// ========================================================================
+
 					// Need to Update
 					if (isNeedUpdate) {
 						waitDownDialog = new ProgressDialog(PositionActivity.this);
 						waitDownDialog.setTitle("下載中!");
 						waitDownDialog.setMessage("請稍等...");
 						waitDownDialog.show();
-						// Start download Json file
+						// Start to download Json file
 						thread = new Thread(new Runnable() {
 
 							public void run() {
@@ -153,8 +159,10 @@ public class PositionActivity extends Activity {
 
 									String map = jsonObj.getString("map");
 									DownloadHelper downloader = new DownloadHelper();
+
+									// Img extension name ?
 									// ======================================================================================
-									downloader.downFile(map, Global.MapDirRoot + "/" + mapID, "map.jpg");
+									downloader.downFile(map, Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/", "map.jpg");
 									// ======================================================================================
 									// ==================================
 
@@ -174,32 +182,18 @@ public class PositionActivity extends Activity {
 						});
 						thread.start();
 					} else {
+						// Not need to Update
 
+						// ========================================================================
 						// Do follow by
 						// handler.sendEmptyMessage(messageCode.DOWNLOAD_OK); ??
 						// But waitDownDialog.dismiss(); in scanResultOk() !!
+						// ========================================================================
 
 						showMapData(mapID);
 
-						File SD = Environment.getExternalStorageDirectory();
-						File test = new File(SD + "/Position/" + mapID + "/" + mapID + ".json");
-
-						FileReader in = new FileReader(test);
-						BufferedReader stdin = new BufferedReader(in);
-
-						String jsonString = "";
-						String jsonString1 = null;
-						while (((jsonString1 = stdin.readLine()) != null)) {
-							jsonString = jsonString + jsonString1;
-						}
-						in.close();
-
-						JSONObject jsonObj = new JSONObject(jsonString);
+						JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
 						JSONArray jsonObjArray = jsonObj.getJSONArray("points");
-
-						// JSONArray jsonPhoto = jsonObjArray.getJSONObject(
-						// Integer.valueOf(Global.PointId)).getJSONArray(
-						// "photos");
 						JSONObject jsonObjCoordObject;
 						// =================================================================================================
 						String title = "";
@@ -212,7 +206,12 @@ public class PositionActivity extends Activity {
 							if (jsonObjCoordObject.getString("pointID").equals(Global.PointId)) {
 
 								title = jsonObjCoordObject.getString("title");
-								desc = jsonObjCoordObject.getString("description");
+								if (jsonObjCoordObject.getString("description") != null) {
+									desc = jsonObjCoordObject.getString("description");
+								} else {
+									desc = "此地點尚無描述!";
+								}
+
 								tag = true;
 								break;
 							}
@@ -223,20 +222,18 @@ public class PositionActivity extends Activity {
 						LayoutInflater factory = LayoutInflater.from(this);
 						final View v1 = factory.inflate(R.layout.contentview, null);
 
-						Builder gg = new AlertDialog.Builder(PositionActivity.this);
-						TextView titlet = (TextView) v1.findViewById(R.id.ttt);
+						Builder showPointDesc = new AlertDialog.Builder(PositionActivity.this);
+						TextView contentDesc = (TextView) v1.findViewById(R.id.ttt);
 						if (tag) {
-							gg.setTitle(title);
-							// gg.setMessage(desc);
-
-							titlet.setText(desc);
+							showPointDesc.setTitle(title);
+							contentDesc.setText(desc);
 
 						} else {
-							gg.setTitle("抱歉");
-							titlet.setText("此位置已被刪除!");
+							showPointDesc.setTitle("抱歉");
+							contentDesc.setText("此位置已被刪除!");
 						}
 
-						gg.setPositiveButton("確認", new DialogInterface.OnClickListener() {
+						showPointDesc.setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
@@ -245,10 +242,10 @@ public class PositionActivity extends Activity {
 							}
 						});
 
-						titlet.setTextSize(20);
-						titlet.setTextColor(Color.YELLOW);
-						gg.setView(v1);
-						gg.show();
+						contentDesc.setTextSize(20);
+						contentDesc.setTextColor(Color.YELLOW);
+						showPointDesc.setView(v1);
+						showPointDesc.show();
 
 					}
 
@@ -277,6 +274,7 @@ public class PositionActivity extends Activity {
 				 * 
 				 * } }); scanCancelDialog.show();
 				 */
+
 				// Show last map data
 				showLastMapData();
 
@@ -289,11 +287,11 @@ public class PositionActivity extends Activity {
 
 		Boolean isExistent;
 		LookHelper looker = new LookHelper();
-		isExistent = looker.look(Global.SDPathRoot, Global.MapDirName);
+		isExistent = looker.look(Global.SDPathRoot + "/", Global.MapDirName);
 
 		if (!isExistent) {
 			MakeDirHelper maker = new MakeDirHelper();
-			maker.make(Global.SDPathRoot, Global.MapDirName);
+			maker.make(Global.SDPathRoot + "/", Global.MapDirName);
 		}
 
 	}
@@ -303,7 +301,7 @@ public class PositionActivity extends Activity {
 
 		LookHelper looker = new LookHelper();
 
-		return looker.look(Global.MapDirRoot, mapId);
+		return looker.look(Global.SDPathRoot + "/" + Global.MapDirName + "/", mapId);
 	}
 
 	private void downloadMapJson(String mapId, String downHttpUrl) throws IOException {
@@ -311,17 +309,16 @@ public class PositionActivity extends Activity {
 
 		DownloadHelper downloader = new DownloadHelper();
 
-		File SDCardRoot = Environment.getExternalStorageDirectory();
 		MakeDirHelper def = new MakeDirHelper();
-		def.make(Global.MapDirRoot, mapId);
+		def.make(Global.SDPathRoot + "/" + Global.MapDirName + "/", mapId);
 
-		downloader.downFile(downHttpUrl, Global.MapDirRoot + "/" + mapId, mapId + ".json");
+		downloader.downFile(downHttpUrl, Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapId + "/", mapId + ".json");
 
 		// Copy last downloaded JSON file in to map dir root
-		File abc = new File(SDCardRoot + "/" + Global.MapDirRoot + "/" + mapId + "" + "/" + mapId + ".json");
-		File dstFile = new File(SDCardRoot + "/" + Global.MapDirRoot + "/" + "last.json");
+		File srcFile = new File(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapId + "/" + mapId + ".json");
+		File dstFile = new File(Global.SDPathRoot + "/" + Global.MapDirName + "/" + "last.json");
 
-		BufferedInputStream in = new BufferedInputStream(new FileInputStream(abc));
+		BufferedInputStream in = new BufferedInputStream(new FileInputStream(srcFile));
 		BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(dstFile));
 
 		byte[] tmp = new byte[1024];
@@ -339,21 +336,8 @@ public class PositionActivity extends Activity {
 
 		Boolean result = false;
 
-		File SD = Environment.getExternalStorageDirectory();
-		File test = new File(SD + "/Position/" + mapId + "/" + mapId + ".json");
 		try {
-			FileReader in = new FileReader(test);
-			BufferedReader stdin = new BufferedReader(in);
-
-			String jsonString = "";
-			String jsonString1 = null;
-			while (((jsonString1 = stdin.readLine()) != null)) {
-				jsonString = jsonString + jsonString1;
-			}
-			in.close();
-
-			JSONObject jsonObj = new JSONObject(jsonString);
-
+			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
 			int verNow = jsonObj.getInt("mapVer");
 
 			if (verNow >= Integer.valueOf(mapVer)) {
@@ -361,20 +345,11 @@ public class PositionActivity extends Activity {
 			}
 			// pointTitle.setText(verNow+" "+Integer.valueOf(mapVer));
 
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			result = false;
-			// pointTitle.setText("No last map data!(FileNotFoundException)");
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			result = false;
 			// pointTitle.setText("No last map data!(JSONException)");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			// pointTitle.setText("No last map data!(IOException)");
 		}
 
 		return result;
@@ -383,19 +358,18 @@ public class PositionActivity extends Activity {
 	private Boolean checkOldMapData(String MapId) {
 		// Return true if there is old map data
 		LookHelper look = new LookHelper();
-		return look.look(Global.MapDirRoot, MapId);
+		return look.look(Global.SDPathRoot + "/" + Global.MapDirName + "/", MapId);
 	}
 
 	private void showMapData(String mapId) {
 
-		File SDCardRoot = Environment.getExternalStorageDirectory();
 		// Copy last downloaded JSON file in to map dir root
-		File abc = new File(SDCardRoot + "/" + Global.MapDirRoot + "/" + mapId + "/" + mapId + ".json");
-		File dstFile = new File(SDCardRoot + "/" + Global.MapDirRoot + "/" + "last.json");
+		File srcFile = new File(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapId + "/" + mapId + ".json");
+		File dstFile = new File(Global.SDPathRoot + "/" + Global.MapDirName + "/" + "last.json");
 
 		try {
 
-			BufferedInputStream in = new BufferedInputStream(new FileInputStream(abc));
+			BufferedInputStream in = new BufferedInputStream(new FileInputStream(srcFile));
 			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(dstFile));
 
 			byte[] tmp = new byte[1024];
@@ -417,10 +391,6 @@ public class PositionActivity extends Activity {
 		mapView.getSettings().setUseWideViewPort(true);
 
 		// Bind the image path
-		// String data =
-		// "<img src = \"file:///android_res/drawable/abc.png\" />";
-		// String data =
-		// "<img src = \"http:///indoorposition.appspot.com/image/map.jpg\" />";
 
 		// String data = "<img src = \"file:///sdcard/somefile.jpg\" />";
 		String data = "<img src = \"file:///sdcard/" + Global.MapDirName + "/" + mapId + "/" + "map.jpg" + "\" />";
@@ -440,35 +410,15 @@ public class PositionActivity extends Activity {
 	private void showLastMapData() {
 		// Show last Map data if it exists
 
-		File SDCardRoot = Environment.getExternalStorageDirectory();
-		File lastJson = new File(SDCardRoot + "/" + "Position" + "/" + "last.json");
-		FileReader in;
-
 		try {
-			in = new FileReader(lastJson);
-			BufferedReader stdin = new BufferedReader(in);
 
-			String jsonString = "";
-			String jsonString1 = null;
-			while (((jsonString1 = stdin.readLine()) != null)) {
-				jsonString = jsonString + jsonString1;
-			}
-			in.close();
+			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + "last.json"));
 
-			JSONObject jsonObj = new JSONObject(jsonString);
 			String mapId = jsonObj.getString("mapID");
 
 			showMapData(mapId);
 			pointTitle.setText("最近的地圖!");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			pointTitle.setText("沒有最近的地圖!");
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			pointTitle.setText("沒有最近的地圖!");
-		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			pointTitle.setText("沒有最近的地圖!");
@@ -481,21 +431,10 @@ public class PositionActivity extends Activity {
 		showMapData(mapID);
 		waitDownDialog.dismiss();
 
-		File SD = Environment.getExternalStorageDirectory();
-		File test = new File(SD + "/Position/" + mapID + "/" + mapID + ".json");
 		try {
 
-			FileReader in = new FileReader(test);
-			BufferedReader stdin = new BufferedReader(in);
+			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
 
-			String jsonString = "";
-			String jsonString1 = null;
-			while (((jsonString1 = stdin.readLine()) != null)) {
-				jsonString = jsonString + jsonString1;
-			}
-			in.close();
-
-			JSONObject jsonObj = new JSONObject(jsonString);
 			JSONArray jsonObjArray = jsonObj.getJSONArray("points");
 
 			// JSONArray jsonPhoto = jsonObjArray.getJSONObject(
@@ -514,17 +453,21 @@ public class PositionActivity extends Activity {
 				if (jsonObjCoordObject.getString("pointID").equals(Global.PointId)) {
 
 					title = jsonObjCoordObject.getString("title");
-					desc = jsonObjCoordObject.getString("description");
+					if (jsonObjCoordObject.getString("description") != null) {
+						desc = jsonObjCoordObject.getString("description");
+					} else {
+						desc = "此地點尚無描述!";
+					}
 				}
 			}
 
 			LayoutInflater factory = LayoutInflater.from(PositionActivity.this);
 			final View v1 = factory.inflate(R.layout.contentview, null);
 
-			Builder gg = new AlertDialog.Builder(PositionActivity.this);
-			gg.setTitle(title);
+			Builder showPointDesc = new AlertDialog.Builder(PositionActivity.this);
+			showPointDesc.setTitle(title);
 			// gg.setMessage(desc);
-			gg.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			showPointDesc.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
@@ -532,15 +475,15 @@ public class PositionActivity extends Activity {
 
 				}
 			});
-			TextView titlet = (TextView) v1.findViewById(R.id.ttt);
+			TextView contentDesc = (TextView) v1.findViewById(R.id.ttt);
 
-			titlet.setTextSize(20);
-			titlet.setTextColor(Color.YELLOW);
-			titlet.setText(desc);
+			contentDesc.setTextSize(20);
+			contentDesc.setTextColor(Color.YELLOW);
+			contentDesc.setText(desc);
+			showPointDesc.setView(v1);
 
-			gg.setView(v1);
+			showPointDesc.show();
 
-			gg.show();
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -549,16 +492,16 @@ public class PositionActivity extends Activity {
 	private void scanResultfailed() {
 		// Show failed dialog when download faileds
 		waitDownDialog.dismiss();
-		Builder ggg = new AlertDialog.Builder(PositionActivity.this);
-		ggg.setMessage("請按確認繼續...");
-		ggg.setTitle("下載失敗!").setPositiveButton("確認", new DialogInterface.OnClickListener() {
+		Builder showFailInfo = new AlertDialog.Builder(PositionActivity.this);
+		showFailInfo.setMessage("請按確認繼續...");
+		showFailInfo.setTitle("下載失敗!").setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 
 			}
 		});
-		ggg.show();
+		showFailInfo.show();
 	}
 
 	private void cleanFailFile() {
@@ -577,6 +520,7 @@ public class PositionActivity extends Activity {
 				break;
 			case messageCode.DOWNLOAD_FAILED:
 				scanResultfailed();
+
 				break;
 			}
 
