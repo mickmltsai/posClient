@@ -9,7 +9,6 @@ import ntu.com.google.zxing.client.android.R;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import android.R.color;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
@@ -22,21 +21,20 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.Environment;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MyWebView extends WebView {
 
-	float pointR = 23;
 	Context c;
 
 	AlertDialog.Builder test;
 	Bitmap pin;
+
+	int pointR = 23;
 
 	public MyWebView(Context context, AttributeSet attrs) {
 		// TODO Auto-generated constructor stub
@@ -56,24 +54,10 @@ public class MyWebView extends WebView {
 			int[] y;
 
 			if (Global.MapId != null) {
-				// Not check touchevent when MapId = null
+				// Not check touchEvent when MapId = null
 
 				// Parse x y points into x,y arrays
-				File SD = Environment.getExternalStorageDirectory();
-				File test = new File(SD + "/Position/" + Global.MapId + "/"
-						+ Global.MapId + ".json");
-
-				FileReader in = new FileReader(test);
-				BufferedReader stdin = new BufferedReader(in);
-
-				String jsonString = "";
-				String jsonString1 = null;
-				while (((jsonString1 = stdin.readLine()) != null)) {
-					jsonString = jsonString + jsonString1;
-				}
-				in.close();
-
-				JSONObject jsonObj = new JSONObject(jsonString);
+				JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json"));
 
 				JSONArray jsonObjArray = jsonObj.getJSONArray("points");
 
@@ -83,8 +67,7 @@ public class MyWebView extends WebView {
 				JSONObject jsonObjCoordJsonObject;
 				for (int i = 0; i < jsonObjArray.length(); i++) {
 
-					jsonObjCoordJsonObject = jsonObjArray.getJSONObject(i)
-							.getJSONObject("coord");
+					jsonObjCoordJsonObject = jsonObjArray.getJSONObject(i).getJSONObject("coord");
 
 					x[i] = jsonObjCoordJsonObject.getInt("x");
 					y[i] = jsonObjCoordJsonObject.getInt("y");
@@ -93,53 +76,42 @@ public class MyWebView extends WebView {
 
 				if (event.getAction() == MotionEvent.ACTION_UP) {
 
-					float tx1 = (getScrollX() + event.getX()) / getScale();
-					float ty1 = (getScrollY() + event.getY()) / getScale();
+					float tx = (getScrollX() + event.getX()) / getScale();
+					float ty = (getScrollY() + event.getY()) / getScale();
 
-					float cr = pointR *pointR * getScale();
+					float cr = pointR * pointR * getScale();
 					for (int i = 0; i < jsonObjArray.length(); i++) {
-						float d = ((tx1 - (x[i])) * (tx1 - (x[i])) + (ty1 - (y[i]-35))
-								* (ty1 - (y[i]-35)))* getScale();
-						//float sr = 0.5f;
-						//d = (float) Math.pow(d, sr);
+						float d = ((tx - (x[i])) * (tx - (x[i])) + (ty - (y[i] - 35)) * (ty - (y[i] - 35))) * getScale();
+						// float sr = 0.5f;
+						// d = (float) Math.pow(d, sr);
 
 						if (d <= cr) {
 							// Toast.makeText(c, "test", Toast.LENGTH_SHORT)
 							// .show();
 
 							LayoutInflater factory = LayoutInflater.from(c);
-							final View v1 = factory.inflate(
-									R.layout.contentview, null);
+							final View v1 = factory.inflate(R.layout.contentview, null);
 
-							Builder testt;
-							testt = new AlertDialog.Builder(c);
+							Builder showPointDesc;
+							showPointDesc = new AlertDialog.Builder(c);
 							// testt.setMessage(jsonObjArray.getJSONObject(i)
 							// .getString("description"));
-							testt.setTitle(
-									jsonObjArray.getJSONObject(i).getString(
-											"title"))
-									.setPositiveButton(
-											"½T»{",
-											new DialogInterface.OnClickListener() {
+							showPointDesc.setTitle(jsonObjArray.getJSONObject(i).getString("title")).setPositiveButton("½T»{", new DialogInterface.OnClickListener() {
 
-												@Override
-												public void onClick(
-														DialogInterface dialog,
-														int which) {
-													// TODO Auto-generated
-													// method stub
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									// TODO Auto-generated
+									// method stub
 
-												}
-											}).setView(v1);
+								}
+							}).setView(v1);
 
-							TextView title = (TextView) v1
-									.findViewById(R.id.ttt);
-							title.setTextSize(20);
-							title.setTextColor(Color.YELLOW);
-							title.setText(jsonObjArray.getJSONObject(i)
-									.getString("description"));
+							TextView contentDesc = (TextView) v1.findViewById(R.id.ttt);
+							contentDesc.setTextSize(20);
+							contentDesc.setTextColor(Color.YELLOW);
+							contentDesc.setText(jsonObjArray.getJSONObject(i).getString("description"));
 
-							testt.show();
+							showPointDesc.show();
 							break;
 						}
 
@@ -164,8 +136,7 @@ public class MyWebView extends WebView {
 
 			// Parse x y points into x,y arrays
 			File SD = Environment.getExternalStorageDirectory();
-			File test = new File(SD + "/Position/" + Global.MapId + "/"
-					+ Global.MapId + ".json");
+			File test = new File(SD + "/Position/" + Global.MapId + "/" + Global.MapId + ".json");
 
 			FileReader in = new FileReader(test);
 			BufferedReader stdin = new BufferedReader(in);
@@ -187,8 +158,7 @@ public class MyWebView extends WebView {
 			JSONObject jsonObjCoordJsonObject;
 			for (int i = 0; i < jsonObjArray.length(); i++) {
 
-				jsonObjCoordJsonObject = jsonObjArray.getJSONObject(i)
-						.getJSONObject("coord");
+				jsonObjCoordJsonObject = jsonObjArray.getJSONObject(i).getJSONObject("coord");
 
 				x[i] = jsonObjCoordJsonObject.getInt("x");
 				y[i] = jsonObjCoordJsonObject.getInt("y");
@@ -198,10 +168,7 @@ public class MyWebView extends WebView {
 			// float x = pointX * getScale();
 			// float y = pointY * getScale();
 
-			float r = pointR; // * getScale();
-			//
-			Paint p = new Paint();
-			// p.setColor(Color.RED);
+			// float r = pointR; // * getScale();
 
 			Matrix m = new Matrix();
 			JSONObject jsonObjCoordObject;
@@ -213,23 +180,18 @@ public class MyWebView extends WebView {
 
 				jsonObjCoordObject = jsonObjArray.getJSONObject(i);
 
-				if (jsonObjCoordObject.getString("pointID").equals(
-						Global.PointId)) {
+				if (jsonObjCoordObject.getString("pointID").equals(Global.PointId)) {
 
-					pin = BitmapFactory.decodeResource(getResources(),
-							R.drawable.marker_blue);
+					pin = BitmapFactory.decodeResource(getResources(), R.drawable.marker_blue);
 
 				} else {
-					pin = BitmapFactory.decodeResource(getResources(),
-							R.drawable.marker_pink);
+					pin = BitmapFactory.decodeResource(getResources(), R.drawable.marker_pink);
 
 				}
 
-				b = Bitmap.createBitmap(pin, 0, 0, pin.getWidth(),
-						pin.getHeight(), m, true);
+				b = Bitmap.createBitmap(pin, 0, 0, pin.getWidth(), pin.getHeight(), m, true);
 				// ====================================================================================================
-				canvas.drawBitmap(b, xx - 12 * getScale(),
-						yy - 55 * getScale(), null);
+				canvas.drawBitmap(b, xx - 12 * getScale(), yy - 55 * getScale(), null);
 				// ====================================================================================================
 				// canvas.drawCircle(xx, yy, r, p);
 
