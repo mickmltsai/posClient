@@ -18,7 +18,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.os.Environment;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -31,7 +30,7 @@ public class MyWebView extends WebView {
 
 	Context c;
 
-	AlertDialog.Builder test;
+	//AlertDialog.Builder test;
 	Bitmap pin;
 
 	int pointR = 23;
@@ -173,7 +172,10 @@ public class MyWebView extends WebView {
 			Matrix m = new Matrix();
 			JSONObject jsonObjCoordObject;
 			Bitmap b;
-			m.postScale(getScale(), getScale());
+			
+			// Change pin scale when zoom I/O
+			//m.postScale(getScale(), getScale());
+			
 			for (int i = 0; i < jsonObjArray.length(); i++) {
 				float xx = x[i] * getScale();
 				float yy = y[i] * getScale();
@@ -193,7 +195,6 @@ public class MyWebView extends WebView {
 				// ====================================================================================================
 				canvas.drawBitmap(b, xx - 12 * getScale(), yy - 55 * getScale(), null);
 				// ====================================================================================================
-				// canvas.drawCircle(xx, yy, r, p);
 
 			}
 
