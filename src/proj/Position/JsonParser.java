@@ -6,7 +6,7 @@ import java.io.FileReader;
 
 public class JsonParser {
 
-	public String getJsonRespon(String jsonPath) {
+	public static String getJsonRespon(String jsonPath) {
 		String jsonString = "";
 
 		try {
@@ -22,7 +22,6 @@ public class JsonParser {
 				jsonString = jsonString + jsonString1;
 			}
 			in.close();
-
 		} catch (Exception e) {
 			// TODO: handle exception
 		}

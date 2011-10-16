@@ -2,11 +2,9 @@ package proj.Position;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
@@ -25,7 +23,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -153,9 +150,11 @@ public class PositionActivity extends Activity {
 
 									downloadMapJson(mapID, jsonURL);
 
-									JsonParser parser = new JsonParser();
-									JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/last.json"));
+//									JsonParser parser = new JsonParser();
+//									JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/last.json"));
 
+									JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/last.json"));
+									
 									String map = jsonObj.getString("map");
 									DownloadHelper downloader = new DownloadHelper();
 
@@ -191,9 +190,11 @@ public class PositionActivity extends Activity {
 
 						showMapData(mapID);
 
-						JsonParser parser = new JsonParser();
-
-						JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
+//						JsonParser parser = new JsonParser();
+//
+//						JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
+						
+						JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
 						JSONArray jsonObjArray = jsonObj.getJSONArray("points");
 						JSONObject jsonObjCoordObject;
 						// =================================================================================================
@@ -337,10 +338,12 @@ public class PositionActivity extends Activity {
 		Boolean result = false;
 
 		try {
-			JsonParser parser = new JsonParser();
+//			JsonParser parser = new JsonParser();
+//
+//			JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
 
-			JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
-
+			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
+			
 			int verNow = jsonObj.getInt("mapVer");
 
 			if (verNow >= Integer.valueOf(mapVer)) {
@@ -415,10 +418,12 @@ public class PositionActivity extends Activity {
 
 		try {
 
-			JsonParser parser = new JsonParser();
+//			JsonParser parser = new JsonParser();
+//
+//			JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + "last.json"));
 
-			JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + "last.json"));
-
+			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + "last.json"));
+			
 			String mapId = jsonObj.getString("mapID");
 
 			showMapData(mapId);
@@ -438,9 +443,11 @@ public class PositionActivity extends Activity {
 
 		try {
 
-			JsonParser parser = new JsonParser();
-
-			JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
+//			JsonParser parser = new JsonParser();
+//
+//			JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
+			
+			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
 			JSONArray jsonObjArray = jsonObj.getJSONArray("points");
 			JSONObject jsonObjCoordObject;
 
@@ -541,6 +548,10 @@ public class PositionActivity extends Activity {
 
 	private void cleanFailFile() {
 
+	}
+	
+	private void reDownloadData() {
+		
 	}
 
 	private Handler handler = new Handler() {

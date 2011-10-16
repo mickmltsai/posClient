@@ -56,9 +56,11 @@ public class MyWebView extends WebView {
 				// Not check touchEvent when MapId = null
 
 				// Parse x y points into x,y arrays
-				JsonParser parser = new JsonParser();
+//				JsonParser parser = new JsonParser();
+//
+//				JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json"));
 
-				JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json"));
+				JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json"));
 				JSONArray jsonObjArray = jsonObj.getJSONArray("points");
 
 				x = new int[jsonObjArray.length()];
