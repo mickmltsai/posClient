@@ -5,7 +5,6 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -24,7 +23,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -155,7 +153,8 @@ public class PositionActivity extends Activity {
 
 									downloadMapJson(mapID, jsonURL);
 
-									JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/last.json"));
+									JsonParser parser = new JsonParser();
+									JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/last.json"));
 
 									String map = jsonObj.getString("map");
 									DownloadHelper downloader = new DownloadHelper();
@@ -192,7 +191,9 @@ public class PositionActivity extends Activity {
 
 						showMapData(mapID);
 
-						JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
+						JsonParser parser = new JsonParser();
+
+						JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
 						JSONArray jsonObjArray = jsonObj.getJSONArray("points");
 						JSONObject jsonObjCoordObject;
 						// =================================================================================================
@@ -206,9 +207,8 @@ public class PositionActivity extends Activity {
 							if (jsonObjCoordObject.getString("pointID").equals(Global.PointId)) {
 
 								title = jsonObjCoordObject.getString("title");
-								if (jsonObjCoordObject.getString("description") != null) {
-									desc = jsonObjCoordObject.getString("description");
-								} else {
+								desc = jsonObjCoordObject.getString("description");
+								if (desc.equals("null")) {
 									desc = "此地點尚無描述!";
 								}
 
@@ -337,7 +337,10 @@ public class PositionActivity extends Activity {
 		Boolean result = false;
 
 		try {
-			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
+			JsonParser parser = new JsonParser();
+
+			JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
+
 			int verNow = jsonObj.getInt("mapVer");
 
 			if (verNow >= Integer.valueOf(mapVer)) {
@@ -412,7 +415,9 @@ public class PositionActivity extends Activity {
 
 		try {
 
-			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + "last.json"));
+			JsonParser parser = new JsonParser();
+
+			JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + "last.json"));
 
 			String mapId = jsonObj.getString("mapID");
 
@@ -433,14 +438,33 @@ public class PositionActivity extends Activity {
 
 		try {
 
-			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
+			JsonParser parser = new JsonParser();
 
+			JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
 			JSONArray jsonObjArray = jsonObj.getJSONArray("points");
+			JSONObject jsonObjCoordObject;
+
+			// File SD = Environment.getExternalStorageDirectory();
+			// File test = new File(Global.SDPathRoot + "/" + Global.MapDirName
+			// + "/" + mapID + "/" + mapID + ".json");
+			//
+			// FileReader in = new FileReader(test);
+			// BufferedReader stdin = new BufferedReader(in);
+			//
+			// String jsonString = "";
+			// String jsonString1 = null;
+			// while (((jsonString1 = stdin.readLine()) != null)) {
+			// jsonString = jsonString + jsonString1;
+			// }
+			// in.close();
+			//
+			// JSONObject jsonObj = new JSONObject(jsonString);
+			// JSONArray jsonObjArray = jsonObj.getJSONArray("points");
+			// JSONObject jsonObjCoordObject;
 
 			// JSONArray jsonPhoto = jsonObjArray.getJSONObject(
 			// Integer.valueOf(Global.PointId)).getJSONArray(
 			// "photos");
-			JSONObject jsonObjCoordObject;
 			// ===================================================================
 
 			// ===================================================================
@@ -453,11 +477,11 @@ public class PositionActivity extends Activity {
 				if (jsonObjCoordObject.getString("pointID").equals(Global.PointId)) {
 
 					title = jsonObjCoordObject.getString("title");
-					if (jsonObjCoordObject.getString("description") != null) {
-						desc = jsonObjCoordObject.getString("description");
-					} else {
+					desc = jsonObjCoordObject.getString("description");
+					if (desc.equals("null")) {
 						desc = "此地點尚無描述!";
 					}
+
 				}
 			}
 
@@ -466,7 +490,7 @@ public class PositionActivity extends Activity {
 
 			Builder showPointDesc = new AlertDialog.Builder(PositionActivity.this);
 			showPointDesc.setTitle(title);
-			// gg.setMessage(desc);
+
 			showPointDesc.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
 				@Override
@@ -490,6 +514,17 @@ public class PositionActivity extends Activity {
 	}
 
 	private void scanResultfailed() {
+
+		Boolean isOldMapData;
+
+		// Show old map data if it exist otherwise show last map
+		isOldMapData = checkOldMapData(mapID);
+		if (isOldMapData) {
+			showMapData(mapID);
+		} else {
+			showLastMapData();
+		}
+
 		// Show failed dialog when download faileds
 		waitDownDialog.dismiss();
 		Builder showFailInfo = new AlertDialog.Builder(PositionActivity.this);
@@ -509,7 +544,7 @@ public class PositionActivity extends Activity {
 	}
 
 	private Handler handler = new Handler() {
-		Boolean isOldMapData;
+		// Boolean isOldMapData;
 
 		@Override
 		public void handleMessage(Message msg) {
@@ -524,13 +559,13 @@ public class PositionActivity extends Activity {
 				break;
 			}
 
-			// Show old map data if it exist otherwise show last map
-			isOldMapData = checkOldMapData(mapID);
-			if (isOldMapData) {
-				showMapData(mapID);
-			} else {
-				showLastMapData();
-			}
+			// // Show old map data if it exist otherwise show last map
+			// isOldMapData = checkOldMapData(mapID);
+			// if (isOldMapData) {
+			// showMapData(mapID);
+			// } else {
+			// showLastMapData();
+			// }
 
 			super.handleMessage(msg);
 		}

@@ -6,37 +6,28 @@ import java.io.FileReader;
 
 public class JsonParser {
 
-	private static String oldJsonPath = "";
-	public static String jsonString = "";
+	public String getJsonRespon(String jsonPath) {
+		String jsonString = "";
 
-	public static String getJsonRespon(String jsonPath) {
+		try {
 
-		if (jsonPath.equals(oldJsonPath)) {
-			// Return the previous Json string if they equal
-			return jsonString;
+			File jsonFile = new File(jsonPath);
+			// oldJsonPath = jsonPath;
 
-		} else {
+			FileReader in = new FileReader(jsonFile);
+			BufferedReader stdin = new BufferedReader(in);
 
-			try {
-
-				File jsonFile = new File(jsonPath);
-				oldJsonPath = jsonPath;
-
-				FileReader in = new FileReader(jsonFile);
-				BufferedReader stdin = new BufferedReader(in);
-
-				String jsonString1 = null;
-				while (((jsonString1 = stdin.readLine()) != null)) {
-					jsonString = jsonString + jsonString1;
-				}
-				in.close();
-				return jsonString;
-			} catch (Exception e) {
-				// TODO: handle exception
+			String jsonString1 = null;
+			while (((jsonString1 = stdin.readLine()) != null)) {
+				jsonString = jsonString + jsonString1;
 			}
+			in.close();
 
-			return jsonString;
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
+
+		return jsonString;
 
 	}
 
