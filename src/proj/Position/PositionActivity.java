@@ -24,9 +24,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class PositionActivity extends Activity {
@@ -76,6 +80,7 @@ public class PositionActivity extends Activity {
 		mapView.getSettings().setUseWideViewPort(true);
 
 		scan = (Button) findViewById(R.id.scan);
+
 	}
 
 	private void setListeners() {
@@ -150,11 +155,14 @@ public class PositionActivity extends Activity {
 
 									downloadMapJson(mapID, jsonURL);
 
-//									JsonParser parser = new JsonParser();
-//									JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/last.json"));
+									// JsonParser parser = new JsonParser();
+									// JSONObject jsonObj = new
+									// JSONObject(parser.getJsonRespon(Global.SDPathRoot
+									// + "/" + Global.MapDirName +
+									// "/last.json"));
 
 									JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/last.json"));
-									
+
 									String map = jsonObj.getString("map");
 									DownloadHelper downloader = new DownloadHelper();
 
@@ -190,10 +198,13 @@ public class PositionActivity extends Activity {
 
 						showMapData(mapID);
 
-//						JsonParser parser = new JsonParser();
-//
-//						JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
-						
+						// JsonParser parser = new JsonParser();
+						//
+						// JSONObject jsonObj = new
+						// JSONObject(parser.getJsonRespon(Global.SDPathRoot +
+						// "/" + Global.MapDirName + "/" + mapID + "/" + mapID +
+						// ".json"));
+
 						JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
 						JSONArray jsonObjArray = jsonObj.getJSONArray("points");
 						JSONObject jsonObjCoordObject;
@@ -338,12 +349,14 @@ public class PositionActivity extends Activity {
 		Boolean result = false;
 
 		try {
-//			JsonParser parser = new JsonParser();
-//
-//			JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
+			// JsonParser parser = new JsonParser();
+			//
+			// JSONObject jsonObj = new
+			// JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" +
+			// Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
 
 			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
-			
+
 			int verNow = jsonObj.getInt("mapVer");
 
 			if (verNow >= Integer.valueOf(mapVer)) {
@@ -418,12 +431,14 @@ public class PositionActivity extends Activity {
 
 		try {
 
-//			JsonParser parser = new JsonParser();
-//
-//			JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + "last.json"));
+			// JsonParser parser = new JsonParser();
+			//
+			// JSONObject jsonObj = new
+			// JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" +
+			// Global.MapDirName + "/" + "last.json"));
 
 			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + "last.json"));
-			
+
 			String mapId = jsonObj.getString("mapID");
 
 			showMapData(mapId);
@@ -443,10 +458,12 @@ public class PositionActivity extends Activity {
 
 		try {
 
-//			JsonParser parser = new JsonParser();
-//
-//			JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
-			
+			// JsonParser parser = new JsonParser();
+			//
+			// JSONObject jsonObj = new
+			// JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" +
+			// Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
+
 			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
 			JSONArray jsonObjArray = jsonObj.getJSONArray("points");
 			JSONObject jsonObjCoordObject;
@@ -535,7 +552,7 @@ public class PositionActivity extends Activity {
 		// Show failed dialog when download faileds
 		waitDownDialog.dismiss();
 		Builder showFailInfo = new AlertDialog.Builder(PositionActivity.this);
-		showFailInfo.setMessage("請按確認繼續...");
+		showFailInfo.setMessage("請確認網路連線!\n\n按確認繼續...");
 		showFailInfo.setTitle("下載失敗!").setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
 			@Override
@@ -549,9 +566,9 @@ public class PositionActivity extends Activity {
 	private void cleanFailFile() {
 
 	}
-	
+
 	private void reDownloadData() {
-		
+
 	}
 
 	private Handler handler = new Handler() {
@@ -581,5 +598,35 @@ public class PositionActivity extends Activity {
 			super.handleMessage(msg);
 		}
 	};
+
+	protected static final int MENU_ShowPoints = Menu.FIRST;
+	protected static final int MENU_ChooseMap = Menu.FIRST + 1;
+	protected static final int MENU_RefreshData = Menu.FIRST + 2;
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		menu.add(0, MENU_ShowPoints, 0, "瀏覽定位點");
+		menu.add(0, MENU_ChooseMap, 0, "選擇地圖");
+		menu.add(0, MENU_RefreshData, 0, "重新下載資料");
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);
+		switch (item.getItemId()) {
+		case MENU_ShowPoints:
+
+			break;
+		case MENU_ChooseMap:
+
+			break;
+		case MENU_RefreshData:
+
+			break;
+		}
+		return true;
+	}
 
 }

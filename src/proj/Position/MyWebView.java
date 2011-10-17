@@ -177,7 +177,7 @@ public class MyWebView extends WebView {
 			Bitmap b;
 			
 			// Change pin scale when zoom I/O
-			//m.postScale(getScale(), getScale());
+			m.postScale(getScale(), getScale());
 			
 			for (int i = 0; i < jsonObjArray.length(); i++) {
 				float xx = x[i] * getScale();
