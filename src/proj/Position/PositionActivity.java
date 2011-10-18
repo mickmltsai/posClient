@@ -19,7 +19,11 @@ import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -420,7 +424,7 @@ public class PositionActivity extends Activity {
 		// Set map id
 		Global.MapId = mapId;
 		// Show map IMG
-		mapView.loadDataWithBaseURL("about:blank", data, mimeType, encoding, "");
+		//mapView.loadDataWithBaseURL("about:blank", data, mimeType, encoding, "");
 		// Update the touch points data (touchevent and onDraw method)
 		mapView.invalidate();
 
