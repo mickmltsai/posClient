@@ -9,6 +9,7 @@ import ntu.com.google.zxing.client.android.R;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.R.integer;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
@@ -20,6 +21,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.os.Environment;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -34,6 +36,9 @@ public class MyWebView extends WebView {
 	Bitmap pin;
 
 	int pointR = 23;
+	int scrollX = 0;
+	int scrollY = 0;
+	boolean scrollFlag = true;
 
 	public MyWebView(Context context, AttributeSet attrs) {
 		// TODO Auto-generated constructor stub
@@ -131,7 +136,7 @@ public class MyWebView extends WebView {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
-
+		
 		int[] x;
 		int[] y;
 		try {
@@ -200,6 +205,11 @@ public class MyWebView extends WebView {
 				// ====================================================================================================
 
 			}
+			
+			if(scrollFlag){
+				scrollFlag = false;
+				scrollTo(scrollX, scrollY);
+			}
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -207,8 +217,10 @@ public class MyWebView extends WebView {
 
 	}
 	
-	public void focusPoint() {
-		
+	public void focusPoint(int x, int y) {
+		scrollX = (int) (x*getScale());
+		scrollY = (int) (y*getScale());
+		scrollFlag = true;
 	}
 
 }

@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import ntu.com.google.zxing.client.android.R;
+import android.R.integer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -27,6 +28,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -416,7 +418,7 @@ public class PositionActivity extends Activity {
 		// Bind the image path
 
 		// String data = "<img src = \"file:///sdcard/somefile.jpg\" />";
-		String data = "<img src = \"file:///sdcard/" + Global.MapDirName + "/" + mapId + "/" + "map.jpg" + "\" />";
+		String data = "<body style=\"margin:0;\"><img src = \"file:///sdcard/" + Global.MapDirName + "/" + mapId + "/" + "map.jpg" + "\"/></body>";
 
 		final String mimeType = "text/html";
 		final String encoding = "utf-8";
@@ -424,9 +426,41 @@ public class PositionActivity extends Activity {
 		// Set map id
 		Global.MapId = mapId;
 		// Show map IMG
-		//mapView.loadDataWithBaseURL("about:blank", data, mimeType, encoding, "");
+		mapView.loadDataWithBaseURL("about:blank", data, mimeType, encoding, "");
+		
 		// Update the touch points data (touchevent and onDraw method)
 		mapView.invalidate();
+		Global.PointId=pointID;
+		JSONObject jsonObj;
+		int x=0, y=0;
+		try {
+			jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
+			JSONArray jsonObjArray = jsonObj.getJSONArray("points");
+			JSONObject jsonObjCoordJsonObject;
+			
+			for (int i = 0; i < jsonObjArray.length(); i++) {
+				if(jsonObjArray.getJSONObject(i).getString("pointID").equals(Global.PointId)){
+					jsonObjCoordJsonObject = jsonObjArray.getJSONObject(i).getJSONObject("coord");
+					x = jsonObjCoordJsonObject.getInt("x");
+					y = jsonObjCoordJsonObject.getInt("y");
+					break;
+				}
+			}
+			
+			
+			Log.e("123", "ineewrwqefkjhwfekaerhf");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Log.e("123", "11111111111");
+		}
+		
+		
+
+		
+	
+		mapView.focusPoint(x, y);
+		
 
 	}
 
