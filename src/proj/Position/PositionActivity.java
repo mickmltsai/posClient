@@ -490,7 +490,13 @@ public class PositionActivity extends Activity {
 
 		// Show title
 		pointTitleText.setText(Global.PointTitle);
-		mapTitleText.setText(Global.MapTitle);
+		
+		if (Global.MapTitle == null || Global.MapTitle.equals("")) {
+			mapTitleText.setText("無地圖名稱");
+		} else {
+			mapTitleText.setText(Global.MapTitle);
+		}
+		
 
 		// Copy last downloaded JSON file in to map dir root
 		File srcFile = new File(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapId + "/" + mapId + ".json");
