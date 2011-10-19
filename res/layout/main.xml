@@ -4,7 +4,12 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:weightSum="1">
-    <TextView android:text="Plain text" android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/plainText" android:layout_gravity="center_horizontal"></TextView>
-<Button android:layout_height="wrap_content" android:id="@+id/scan" android:layout_width="match_parent" android:text="掃描定位標籤" android:textSize="25dp"></Button>
-<proj.Position.MyWebView android:id="@+id/myWebView1" android:layout_height="fill_parent" android:layout_width="fill_parent"></proj.Position.MyWebView>
+    <Button android:id="@+id/scanBtn" android:layout_width="match_parent" android:text="掃描定位標籤" android:textSize="10dp" android:layout_height="28dp"></Button>
+    <LinearLayout android:id="@+id/linearLayout1" android:layout_height="wrap_content" android:layout_width="match_parent">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="您的位置: " android:id="@+id/hint" android:textSize="15dp"></TextView>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/mapTitleText" android:text="地圖名稱" android:textSize="15dp"></TextView>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/arrow" android:text=" -&gt; " android:textSize="15dp"></TextView>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/pointTitleText" android:text="定位點名稱" android:layout_gravity="center_horizontal" android:textSize="15dp"></TextView>
+    </LinearLayout>
+<proj.Position.MyWebView android:layout_height="fill_parent" android:layout_width="fill_parent" android:id="@+id/mainMapView"></proj.Position.MyWebView>
 </LinearLayout>

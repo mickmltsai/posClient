@@ -9,7 +9,6 @@ import ntu.com.google.zxing.client.android.R;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import android.R.integer;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
@@ -21,7 +20,6 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.os.Environment;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,7 +30,7 @@ public class MyWebView extends WebView {
 
 	Context c;
 
-	//AlertDialog.Builder test;
+	// AlertDialog.Builder test;
 	Bitmap pin;
 
 	int pointR = 23;
@@ -61,9 +59,12 @@ public class MyWebView extends WebView {
 				// Not check touchEvent when MapId = null
 
 				// Parse x y points into x,y arrays
-//				JsonParser parser = new JsonParser();
-//
-//				JSONObject jsonObj = new JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json"));
+				// JsonParser parser = new JsonParser();
+				//
+				// JSONObject jsonObj = new
+				// JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" +
+				// Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId +
+				// ".json"));
 
 				JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json"));
 				JSONArray jsonObjArray = jsonObj.getJSONArray("points");
@@ -88,7 +89,7 @@ public class MyWebView extends WebView {
 
 					float cr = pointR * pointR * getScale();
 					for (int i = 0; i < jsonObjArray.length(); i++) {
-						float d = ((tx - (x[i])) * (tx - (x[i])) + (ty - (y[i] - 35)) * (ty - (y[i] - 35))) * getScale();
+						float d = ((tx - (x[i])) * (tx - (x[i])) + (ty - (y[i] - 40)) * (ty - (y[i] - 44))) * getScale();
 						// float sr = 0.5f;
 						// d = (float) Math.pow(d, sr);
 
@@ -116,8 +117,12 @@ public class MyWebView extends WebView {
 							TextView contentDesc = (TextView) v1.findViewById(R.id.ttt);
 							contentDesc.setTextSize(20);
 							contentDesc.setTextColor(Color.YELLOW);
-							contentDesc.setText(jsonObjArray.getJSONObject(i).getString("description"));
 
+							if (jsonObjArray.getJSONObject(i).getString("description").equals("null") || jsonObjArray.getJSONObject(i).getString("description").equals("")) {
+								contentDesc.setText("此地點尚無描述!");
+							} else {
+								contentDesc.setText(jsonObjArray.getJSONObject(i).getString("description"));
+							}
 							showPointDesc.show();
 							break;
 						}
@@ -136,7 +141,7 @@ public class MyWebView extends WebView {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
-		
+
 		int[] x;
 		int[] y;
 		try {
@@ -180,10 +185,10 @@ public class MyWebView extends WebView {
 			Matrix m = new Matrix();
 			JSONObject jsonObjCoordObject;
 			Bitmap b;
-			
+
 			// Change pin scale when zoom I/O
 			m.postScale(getScale(), getScale());
-			
+
 			for (int i = 0; i < jsonObjArray.length(); i++) {
 				float xx = x[i] * getScale();
 				float yy = y[i] * getScale();
@@ -201,12 +206,12 @@ public class MyWebView extends WebView {
 
 				b = Bitmap.createBitmap(pin, 0, 0, pin.getWidth(), pin.getHeight(), m, true);
 				// ====================================================================================================
-				canvas.drawBitmap(b, xx - 12 * getScale(), yy - 55 * getScale(), null);
+				canvas.drawBitmap(b, xx - 19 * getScale(), yy - 65 * getScale(), null);
 				// ====================================================================================================
 
 			}
-			
-			if(scrollFlag){
+
+			if (scrollFlag) {
 				scrollFlag = false;
 				scrollTo(scrollX, scrollY);
 			}
@@ -216,10 +221,10 @@ public class MyWebView extends WebView {
 		}
 
 	}
-	
+
 	public void focusPoint(int x, int y) {
-		scrollX = (int) (x*getScale());
-		scrollY = (int) (y*getScale());
+		scrollX = (int) (x * getScale());
+		scrollY = (int) (y * getScale());
 		scrollFlag = true;
 	}
 

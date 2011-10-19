@@ -13,18 +13,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import ntu.com.google.zxing.client.android.R;
-import android.R.integer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -34,9 +29,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
 public class PositionActivity extends Activity {
@@ -44,12 +37,13 @@ public class PositionActivity extends Activity {
 	private MyWebView mapView;
 	private Button scan;
 
-	private TextView pointTitle;
+	private TextView pointTitleText;
+	private TextView mapTitleText;
 	private String jsonURL;
 	private String mapID;
 	private String mapVer;
 	private String pointID;
-	private String title;
+	private String potintTitle;
 
 	private Thread thread;
 	private ProgressDialog waitDownDialog;
@@ -69,23 +63,24 @@ public class PositionActivity extends Activity {
 		findViews();
 		setListeners();
 		makeRootDir();
-		pointTitle.setTextColor(Color.RED);
-		pointTitle.setTextSize(35);
+		pointTitleText.setTextColor(Color.RED);
+		// pointTitleText.setTextSize(35);
 		// showLastMapData();
 		startScan();
 
 	}
 
 	private void findViews() {
-		pointTitle = (TextView) findViewById(R.id.plainText);
+		pointTitleText = (TextView) findViewById(R.id.pointTitleText);
+		mapTitleText = (TextView) findViewById(R.id.mapTitleText);
 
-		mapView = (MyWebView) findViewById(R.id.myWebView1);
+		mapView = (MyWebView) findViewById(R.id.mainMapView);
 		// Enable to zoom in/out
 		mapView.getSettings().setBuiltInZoomControls(true);
 		// Enable to zoom in/out by double tap
 		mapView.getSettings().setUseWideViewPort(true);
 
-		scan = (Button) findViewById(R.id.scan);
+		scan = (Button) findViewById(R.id.scanBtn);
 
 	}
 
@@ -108,6 +103,7 @@ public class PositionActivity extends Activity {
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+		// Here are two requestCode now (0,1)
 
 		if (requestCode == 0) {
 			if (resultCode == RESULT_OK) {
@@ -129,13 +125,15 @@ public class PositionActivity extends Activity {
 					tmp = contentPart[2].split("=");
 					pointID = tmp[1];
 					tmp = contentPart[3].split("=");
-					title = tmp[1];
+					potintTitle = tmp[1];
 
-					// Show title
-					pointTitle.setText(title);
+					// Show title (move to showMapData)
+					// pointTitle.setText(title);
 
 					// Assign point id to global variable
 					Global.PointId = pointID;
+					// Assign title id to global variable
+					Global.PointTitle = potintTitle;
 
 					// Check whether it need to download Json file
 					isNeedUpdate = !checkMapVerUpdate(mapID, mapVer);
@@ -168,6 +166,9 @@ public class PositionActivity extends Activity {
 									// "/last.json"));
 
 									JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/last.json"));
+
+									// Assign MapTitle
+									Global.MapTitle = jsonObj.getString("title");
 
 									String map = jsonObj.getString("map");
 									DownloadHelper downloader = new DownloadHelper();
@@ -214,6 +215,10 @@ public class PositionActivity extends Activity {
 						JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
 						JSONArray jsonObjArray = jsonObj.getJSONArray("points");
 						JSONObject jsonObjCoordObject;
+
+						// Assign MapTitle
+						Global.MapTitle = jsonObj.getString("title");
+
 						// =================================================================================================
 						String title = "";
 						String desc = "";
@@ -226,7 +231,7 @@ public class PositionActivity extends Activity {
 
 								title = jsonObjCoordObject.getString("title");
 								desc = jsonObjCoordObject.getString("description");
-								if (desc.equals("null")) {
+								if (desc.equals("null") || desc.equals("")) {
 									desc = "此地點尚無描述!";
 								}
 
@@ -269,9 +274,24 @@ public class PositionActivity extends Activity {
 
 				} catch (Exception e) {
 					// Handle when scan QR code which is not our form
+
+					// Assign point id to global variable
+					Global.PointId = null;
+					// Assign point title to global variable
+					Global.PointTitle = null;
+
 					showLastMapData();
-					// pointTitle.setText("QR code error!");
-					pointTitle.setText("條碼錯誤!");
+
+					Builder QRerrorDialog = new AlertDialog.Builder(PositionActivity.this);
+					QRerrorDialog.setTitle("條碼格式錯誤!").setMessage("請按確認繼續...").setPositiveButton("確認", new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+
+						}
+					});
+					QRerrorDialog.show();
+
 				}
 
 				// Handle successful scan
@@ -293,11 +313,91 @@ public class PositionActivity extends Activity {
 				 * } }); scanCancelDialog.show();
 				 */
 
+				// Assign point id to global variable
+				Global.PointId = null;
+				// Assign point title to global variable
+				Global.PointTitle = null;
+
 				// Show last map data
 				showLastMapData();
 
 			}
 		}
+
+		// After click point list's item
+		if (requestCode == 1) {
+			if (resultCode == RESULT_OK) {
+				potintTitle = Global.PointTitle;
+
+				showMapData(Global.MapId);
+
+				try {
+
+					JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json"));
+					JSONArray jsonObjArray = jsonObj.getJSONArray("points");
+					JSONObject jsonObjCoordObject;
+
+					// JSONArray jsonPhoto = jsonObjArray.getJSONObject(
+					// Integer.valueOf(Global.PointId)).getJSONArray(
+					// "photos");
+					// ===================================================================
+
+					// ===================================================================
+					String title = "";
+					String desc = "";
+					for (int i = 0; i < jsonObjArray.length(); i++) {
+
+						jsonObjCoordObject = jsonObjArray.getJSONObject(i);
+
+						if (jsonObjCoordObject.getString("pointID").equals(Global.PointId)) {
+
+							title = jsonObjCoordObject.getString("title");
+							desc = jsonObjCoordObject.getString("description");
+							if (desc.equals("null") || desc.equals("")) {
+								desc = "此地點尚無描述!";
+							}
+
+						}
+					}
+
+					LayoutInflater factory = LayoutInflater.from(PositionActivity.this);
+					final View v1 = factory.inflate(R.layout.contentview, null);
+
+					Builder showPointDesc = new AlertDialog.Builder(PositionActivity.this);
+					showPointDesc.setTitle(title);
+
+					showPointDesc.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// TODO Auto-generated method stub
+
+						}
+					});
+					TextView contentDesc = (TextView) v1.findViewById(R.id.ttt);
+
+					contentDesc.setTextSize(20);
+					contentDesc.setTextColor(Color.YELLOW);
+					contentDesc.setText(desc);
+					showPointDesc.setView(v1);
+
+					showPointDesc.show();
+
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+			}
+		}
+
+		// After click map list's item
+		if (requestCode == 2) {
+			if (resultCode == RESULT_OK) {
+				showMapData(Global.MapId);
+				potintTitle = Global.PointTitle;
+
+			}
+		}
+
 	}
 
 	private void makeRootDir() {
@@ -388,6 +488,10 @@ public class PositionActivity extends Activity {
 
 	private void showMapData(String mapId) {
 
+		// Show title
+		pointTitleText.setText(Global.PointTitle);
+		mapTitleText.setText(Global.MapTitle);
+
 		// Copy last downloaded JSON file in to map dir root
 		File srcFile = new File(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapId + "/" + mapId + ".json");
 		File dstFile = new File(Global.SDPathRoot + "/" + Global.MapDirName + "/" + "last.json");
@@ -406,7 +510,7 @@ public class PositionActivity extends Activity {
 			out.close();
 		} catch (Exception e) {
 			// TODO: handle exception
-			pointTitle.setText("showMapData error!");
+			pointTitleText.setText("showMapData error!");
 		}
 
 		// Enable to zoom in/out
@@ -427,40 +531,38 @@ public class PositionActivity extends Activity {
 		Global.MapId = mapId;
 		// Show map IMG
 		mapView.loadDataWithBaseURL("about:blank", data, mimeType, encoding, "");
-		
+
 		// Update the touch points data (touchevent and onDraw method)
 		mapView.invalidate();
-		Global.PointId=pointID;
-		JSONObject jsonObj;
-		int x=0, y=0;
-		try {
-			jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
-			JSONArray jsonObjArray = jsonObj.getJSONArray("points");
-			JSONObject jsonObjCoordJsonObject;
-			
-			for (int i = 0; i < jsonObjArray.length(); i++) {
-				if(jsonObjArray.getJSONObject(i).getString("pointID").equals(Global.PointId)){
-					jsonObjCoordJsonObject = jsonObjArray.getJSONObject(i).getJSONObject("coord");
-					x = jsonObjCoordJsonObject.getInt("x");
-					y = jsonObjCoordJsonObject.getInt("y");
-					break;
-				}
-			}
-			
-			
-			Log.e("123", "ineewrwqefkjhwfekaerhf");
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			Log.e("123", "11111111111");
-		}
-		
-		
 
-		
-	
-		mapView.focusPoint(x, y);
-		
+		// Focus
+
+		// int x = 0, y = 0;
+		// try {
+		// JSONObject jsonObj;
+		// jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot +
+		// "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
+		// JSONArray jsonObjArray = jsonObj.getJSONArray("points");
+		// JSONObject jsonObjCoordJsonObject;
+		//
+		// for (int i = 0; i < jsonObjArray.length(); i++) {
+		// if
+		// (jsonObjArray.getJSONObject(i).getString("pointID").equals(Global.PointId))
+		// {
+		// jsonObjCoordJsonObject =
+		// jsonObjArray.getJSONObject(i).getJSONObject("coord");
+		// x = jsonObjCoordJsonObject.getInt("x");
+		// y = jsonObjCoordJsonObject.getInt("y");
+		// break;
+		// }
+		// }
+		//
+		//
+		// } catch (JSONException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		// mapView.focusPoint(x, y);
 
 	}
 
@@ -477,14 +579,27 @@ public class PositionActivity extends Activity {
 
 			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + "last.json"));
 
+			// Assign MapTitle
+			Global.MapTitle = jsonObj.getString("title");
+
 			String mapId = jsonObj.getString("mapID");
 
 			showMapData(mapId);
-			pointTitle.setText("最近的地圖!");
+			mapTitleText.setText(jsonObj.getString("title"));
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			pointTitle.setText("沒有最近的地圖!");
+			
+			Builder noMapDialog = new AlertDialog.Builder(PositionActivity.this);
+			noMapDialog.setTitle("無任何地圖!").setMessage("請按確認繼續...").setPositiveButton("確認", new DialogInterface.OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+
+				}
+			});
+			noMapDialog.show();
+			
 		}
 
 	}
@@ -496,33 +611,12 @@ public class PositionActivity extends Activity {
 
 		try {
 
-			// JsonParser parser = new JsonParser();
-			//
-			// JSONObject jsonObj = new
-			// JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" +
-			// Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
-
 			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
 			JSONArray jsonObjArray = jsonObj.getJSONArray("points");
 			JSONObject jsonObjCoordObject;
 
-			// File SD = Environment.getExternalStorageDirectory();
-			// File test = new File(Global.SDPathRoot + "/" + Global.MapDirName
-			// + "/" + mapID + "/" + mapID + ".json");
-			//
-			// FileReader in = new FileReader(test);
-			// BufferedReader stdin = new BufferedReader(in);
-			//
-			// String jsonString = "";
-			// String jsonString1 = null;
-			// while (((jsonString1 = stdin.readLine()) != null)) {
-			// jsonString = jsonString + jsonString1;
-			// }
-			// in.close();
-			//
-			// JSONObject jsonObj = new JSONObject(jsonString);
-			// JSONArray jsonObjArray = jsonObj.getJSONArray("points");
-			// JSONObject jsonObjCoordObject;
+			// Assign MapTitle
+			Global.MapTitle = jsonObj.getString("title");
 
 			// JSONArray jsonPhoto = jsonObjArray.getJSONObject(
 			// Integer.valueOf(Global.PointId)).getJSONArray(
@@ -540,7 +634,7 @@ public class PositionActivity extends Activity {
 
 					title = jsonObjCoordObject.getString("title");
 					desc = jsonObjCoordObject.getString("description");
-					if (desc.equals("null")) {
+					if (desc.equals("null") || desc.equals("")) {
 						desc = "此地點尚無描述!";
 					}
 
@@ -583,6 +677,21 @@ public class PositionActivity extends Activity {
 		isOldMapData = checkOldMapData(mapID);
 		if (isOldMapData) {
 			showMapData(mapID);
+
+			JSONObject jsonObj;
+			try {
+				jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
+
+				// Assign MapTitle
+				Global.MapTitle = jsonObj.getString("title");
+
+				// Assign point title to global variable
+				Global.PointTitle = null;
+
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else {
 			showLastMapData();
 		}
@@ -655,9 +764,15 @@ public class PositionActivity extends Activity {
 		super.onOptionsItemSelected(item);
 		switch (item.getItemId()) {
 		case MENU_ShowPoints:
-
+			Intent intent1 = new Intent();
+			intent1.setClass(PositionActivity.this, ShowPointList.class);
+			startActivityForResult(intent1, 1);
+			// startActivity(intent);
 			break;
 		case MENU_ChooseMap:
+			Intent intent2 = new Intent();
+			intent2.setClass(PositionActivity.this, ShowMapList.class);
+			startActivityForResult(intent2, 2);
 
 			break;
 		case MENU_RefreshData:
