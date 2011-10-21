@@ -705,7 +705,7 @@ public class PositionActivity extends Activity {
 		// Show failed dialog when download faileds
 		waitDownDialog.dismiss();
 		Builder showFailInfo = new AlertDialog.Builder(PositionActivity.this);
-		showFailInfo.setMessage("請確認網路連線!\n\n按確認繼續...");
+		showFailInfo.setMessage("請確認網路連線與插入SD卡!\n\n按確認繼續...");
 		showFailInfo.setTitle("下載失敗!").setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
 			@Override
