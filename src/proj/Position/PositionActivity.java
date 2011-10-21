@@ -30,12 +30,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class PositionActivity extends Activity {
 
 	private MyWebView mapView;
-	private Button scan;
+	private ImageButton scan;
 
 	private TextView pointTitleText;
 	private TextView mapTitleText;
@@ -80,7 +81,7 @@ public class PositionActivity extends Activity {
 		// Enable to zoom in/out by double tap
 		mapView.getSettings().setUseWideViewPort(true);
 
-		scan = (Button) findViewById(R.id.scanBtn);
+		scan = (ImageButton) findViewById(R.id.scanBtn);
 
 	}
 
@@ -591,7 +592,6 @@ public class PositionActivity extends Activity {
 			String mapId = jsonObj.getString("mapID");
 
 			showMapData(mapId);
-			mapTitleText.setText(jsonObj.getString("title"));
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
