@@ -77,6 +77,9 @@ public class ShowPointList extends Activity {
 
 				list.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mStrings));
 
+				// set filter
+				list.setTextFilterEnabled(true);
+				
 				// Handle after click point item
 				list.setOnItemClickListener(new OnItemClickListener() {
 

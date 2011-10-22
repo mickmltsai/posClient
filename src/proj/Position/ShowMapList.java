@@ -81,6 +81,8 @@ public class ShowMapList extends Activity {
 		}
 
 		list.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mStrings));
+		// set filter
+		list.setTextFilterEnabled(true);
 
 		// Handle after click map item
 		list.setOnItemClickListener(new OnItemClickListener() {
