@@ -120,7 +120,8 @@
 			</intent-filter>
 		</activity>
 		<activity android:name="proj.Position.PositionActivity"
-			android:configChanges="orientation">
+			android:configChanges="orientation" android:theme="@android:style/Theme.NoTitleBar">
+			>
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 				<category android:name="android.intent.category.LAUNCHER" />

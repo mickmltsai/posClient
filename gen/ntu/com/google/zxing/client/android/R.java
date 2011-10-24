@@ -69,7 +69,6 @@ public final class R {
         public static final int format_text_view_label=0x7f070010;
         public static final int help_contents=0x7f070021;
         public static final int hint=0x7f070027;
-        public static final int imageView1=0x7f070025;
         public static final int image_view=0x7f070020;
         public static final int launch_product_query=0x7f070004;
         public static final int linearLayout1=0x7f07001d;
@@ -107,6 +106,7 @@ public final class R {
         public static final int status_view=0x7f07001c;
         public static final int time_text_view=0x7f070015;
         public static final int time_text_view_label=0x7f070014;
+        public static final int titleBar=0x7f070025;
         public static final int ttt=0x7f07001e;
         public static final int type_text_view=0x7f070013;
         public static final int type_text_view_label=0x7f070012;

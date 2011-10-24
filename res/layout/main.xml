@@ -4,24 +4,24 @@
 	android:layout_height="fill_parent" android:weightSum="1">
 	<LinearLayout android:layout_width="match_parent"
 		android:id="@+id/linearLayout2" android:layout_height="28dp">
-		<ImageView android:id="@+id/imageView1" android:src="@android:drawable/bottom_bar"
-			android:layout_width="225dp" android:layout_height="match_parent"
-			android:scaleType="fitXY" android:layout_weight="0.96"></ImageView>
+		<TextView android:layout_weight="0.96" android:id="@+id/titleBar"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent" android:background="#E8791D" android:textColor="#000000" android:gravity="fill" android:text="                 標記辨識輔助定位 - 使用者端"></TextView>
 		<ImageButton android:src="@drawable/scanicon"
 			android:layout_width="30dp" android:id="@+id/scanBtn"
-			android:layout_height="match_parent" android:background="@drawable/launcher_icon_scan"></ImageButton>
+			android:background="#E8791D" android:layout_height="wrap_content"></ImageButton>
 	</LinearLayout>
 	<LinearLayout android:id="@+id/linearLayout1"
-		android:layout_height="wrap_content" android:layout_width="match_parent">
+		android:layout_width="match_parent" android:layout_height="wrap_content" android:background="#FFFE5F">
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:text="您的位置: "
-			android:id="@+id/hint" android:textSize="15dp"></TextView>
+			android:id="@+id/hint" android:textSize="15dp" android:textColor="#4F35E8"></TextView>
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/mapTitleText"
-			android:text="地圖名稱" android:textSize="15dp"></TextView>
+			android:text="地圖名稱" android:textSize="15dp" android:textColor="#4F35E8"></TextView>
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/arrow"
-			android:text=" -&gt; " android:textSize="15dp"></TextView>
+			android:text=" -&gt; " android:textSize="15dp" android:textColor="#4F35E8"></TextView>
 		<TextView android:layout_gravity="center_horizontal"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="定位點名稱" android:textSize="15dp" android:id="@+id/pointTitleText"></TextView>
