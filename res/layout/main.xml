@@ -2,13 +2,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:layout_height="fill_parent" android:weightSum="1">
-	<LinearLayout android:layout_width="match_parent"
-		android:id="@+id/linearLayout2" android:layout_height="28dp" android:background="#E8791D">
+
+	<LinearLayout
+	    android:id="@+id/linearLayout2"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:background="#E8791D" >
+
 		<TextView android:layout_weight="0.96" android:id="@+id/titleBar"
 			android:layout_width="match_parent"
-			android:layout_height="match_parent" android:background="#E8791D" android:textColor="#000000" android:gravity="fill" android:text="標記辨識輔助定位 - 使用者端"></TextView>
-		<ImageButton android:layout_width="30dp" android:id="@+id/scanBtn"
-			android:layout_height="wrap_content" android:background="@drawable/scanicon"></ImageButton>
+			android:layout_height="match_parent" android:background="#E8791D" android:textColor="#000000" android:gravity="fill" android:text="標記辨識輔助定位 - 使用者端" android:textSize="20dp"></TextView>
+
+		<ImageButton
+		    android:id="@+id/scanBtn"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:background="@drawable/scanicon" >
+</ImageButton>
 	</LinearLayout>
 	<LinearLayout android:id="@+id/linearLayout1"
 		android:layout_width="match_parent" android:layout_height="wrap_content" android:background="#FFFE5F">
@@ -25,7 +35,7 @@
 			android:text="地圖名稱" android:textSize="15dp"></TextView>
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/arrow"
-			android:text=" -&gt; " android:textSize="15dp"></TextView>
+			android:text="→" android:textSize="15dp"></TextView>
 		<TextView android:layout_gravity="center_horizontal"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:text="定位點名稱" android:textSize="15dp" android:id="@+id/pointTitleText"></TextView>
