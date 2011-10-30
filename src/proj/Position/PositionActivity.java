@@ -491,13 +491,12 @@ public class PositionActivity extends Activity {
 
 		// Show title
 		pointTitleText.setText(Global.PointTitle);
-		
+
 		if (Global.MapTitle == null || Global.MapTitle.equals("")) {
 			mapTitleText.setText("無地圖名稱");
 		} else {
 			mapTitleText.setText(Global.MapTitle);
 		}
-		
 
 		// Copy last downloaded JSON file in to map dir root
 		File srcFile = new File(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapId + "/" + mapId + ".json");
@@ -595,7 +594,7 @@ public class PositionActivity extends Activity {
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			
+
 			Builder noMapDialog = new AlertDialog.Builder(PositionActivity.this);
 			noMapDialog.setTitle("無任何地圖!").setMessage("請按確認繼續...").setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
@@ -605,7 +604,7 @@ public class PositionActivity extends Activity {
 				}
 			});
 			noMapDialog.show();
-			
+
 		}
 
 	}
