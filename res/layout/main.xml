@@ -9,18 +9,17 @@
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#E8791D" >
+        android:background="#FF8100" >
 
         <TextView
             android:id="@+id/titleBar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="0.96"
-            android:background="#E8791D"
             android:gravity="fill"
             android:text="標記辨識輔助定位 - 使用者端"
-            android:textColor="#000000"
-            android:textSize="20dp" >
+            android:textColor="#FFFFFF"
+            android:textSize="20dp" android:background="#FF8100">
         </TextView>
 
         <ImageButton
@@ -35,21 +34,21 @@
         android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFE5F" >
+        android:background="#FFF250" >
 
         <TextView
             android:id="@+id/hint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="您的位置: "
-            android:textSize="15dp" />
+            android:textSize="15dp" android:textColor="#000000"/>
 
         <TextView
             android:id="@+id/mapTitleText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="地圖名稱"
-            android:textSize="15dp" >
+            android:textSize="15dp" android:textColor="#000000">
         </TextView>
 
         <TextView
@@ -57,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="→"
-            android:textSize="15dp" >
+            android:textSize="15dp" android:textColor="#000000">
         </TextView>
 
         <TextView
@@ -66,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="定位點名稱"
-            android:textSize="15dp" >
+            android:textSize="15dp" android:textColor="#000000">
         </TextView>
     </LinearLayout>
 
