@@ -67,8 +67,8 @@ public class PositionActivity extends Activity {
 		pointTitleText.setTextColor(Color.RED);
 		scan.setBackgroundResource(R.drawable.scanicon);
 		// pointTitleText.setTextSize(35);
-		// showLastMapData();
-		startScan();
+		showLastMapData();
+		// startScan();
 
 	}
 

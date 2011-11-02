@@ -20,6 +20,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.os.Environment;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -45,6 +46,7 @@ public class MyWebView extends WebView {
 		c = context;
 		this.setClickable(true);
 
+		this.setInitialScale(100);
 	}
 
 	@Override
@@ -86,10 +88,16 @@ public class MyWebView extends WebView {
 
 					float tx = (getScrollX() + event.getX()) / getScale();
 					float ty = (getScrollY() + event.getY()) / getScale();
-
-					float cr = pointR * pointR *getScale();
+					//==========================================================================================================
+					//wait to fix
+					float cr = pointR * pointR * getScale();
 					for (int i = 0; i < jsonObjArray.length(); i++) {
-						float d = ((tx - (x[i])) * (tx - (x[i])) + (ty - (y[i] - 44)) * (ty - (y[i] - 44))) * getScale();
+
+						float d = ((tx - (x[i])) * (tx - (x[i])) + (ty - (y[i] - 30)) * (ty - (y[i] - 30))) * getScale();
+					//wait to fix
+					//==========================================================================================================	
+						
+						
 						// float sr = 0.5f;
 						// d = (float) Math.pow(d, sr);
 
@@ -206,7 +214,7 @@ public class MyWebView extends WebView {
 
 				b = Bitmap.createBitmap(pin, 0, 0, pin.getWidth(), pin.getHeight(), m, true);
 				// ====================================================================================================
-				canvas.drawBitmap(b, xx - 19 * getScale(), yy - 65 * getScale(), null);
+				canvas.drawBitmap(b, xx - ((b.getWidth() + 1 * getScale()) / 2), yy - (b.getHeight() + 1 * getScale()), null);
 				// ====================================================================================================
 
 			}
