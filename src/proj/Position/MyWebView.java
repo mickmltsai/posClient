@@ -87,9 +87,9 @@ public class MyWebView extends WebView {
 					float tx = (getScrollX() + event.getX()) / getScale();
 					float ty = (getScrollY() + event.getY()) / getScale();
 
-					float cr = pointR * pointR * getScale();
+					float cr = pointR * pointR *getScale();
 					for (int i = 0; i < jsonObjArray.length(); i++) {
-						float d = ((tx - (x[i])) * (tx - (x[i])) + (ty - (y[i] - 40)) * (ty - (y[i] - 44))) * getScale();
+						float d = ((tx - (x[i])) * (tx - (x[i])) + (ty - (y[i] - 44)) * (ty - (y[i] - 44))) * getScale();
 						// float sr = 0.5f;
 						// d = (float) Math.pow(d, sr);
 

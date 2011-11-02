@@ -65,6 +65,7 @@ public class PositionActivity extends Activity {
 		setListeners();
 		makeRootDir();
 		pointTitleText.setTextColor(Color.RED);
+		scan.setBackgroundResource(R.drawable.scanicon);
 		// pointTitleText.setTextSize(35);
 		// showLastMapData();
 		startScan();
@@ -760,7 +761,7 @@ public class PositionActivity extends Activity {
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, MENU_ShowPoints, 0, "瀏覽定位點");
 		menu.add(0, MENU_ChooseMap, 0, "選擇地圖");
-		menu.add(0, MENU_RefreshData, 0, "重新下載資料");
+		menu.add(0, MENU_RefreshData, 0, "重整圖資");
 		return true;
 	}
 
