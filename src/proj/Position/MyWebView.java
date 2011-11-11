@@ -9,6 +9,8 @@ import ntu.com.google.zxing.client.android.R;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.R.integer;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
@@ -26,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class MyWebView extends WebView {
@@ -46,6 +49,23 @@ public class MyWebView extends WebView {
 		super(context, attrs);
 		c = context;
 		this.setClickable(true);
+		
+//		int l1h = ((Activity)context).findViewById(R.id.linearLayout1).getHeight();
+//		int l1w =
+//		View ac = ((Activity)context).findViewById(R.id.linearLayout1);//.getWidth();
+//		
+//ac.getHeight();
+//		
+//
+//		
+//		int l2h = ((Activity)context).findViewById(R.id.linearLayout2).getHeight();
+//		int l2w =((Activity)context).findViewById(R.id.linearLayout2).getWidth();
+		
+		
+
+
+		
+		//Log.e("HFDUHFUDHSF", ""+l1h+""+l1w+""+l2h+""+l2w);
 		
 
 		this.setInitialScale(120);
@@ -245,7 +265,7 @@ public class MyWebView extends WebView {
 		getWindowVisibleDisplayFrame(outRect);
 		outRect.centerX();
 		outRect.centerY();
-		Log.e("DDDDDDDDDDD", ""+outRect.bottom);
+
 		
 		scrollX = (int) ((x * getScale())-outRect.centerX());
 		scrollY = (int) (((y+60) * getScale())-outRect.centerY());
