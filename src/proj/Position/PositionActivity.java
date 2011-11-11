@@ -68,7 +68,7 @@ public class PositionActivity extends Activity {
 		scan.setBackgroundResource(R.drawable.scanicon);
 		// pointTitleText.setTextSize(35);
 		showLastMapData();
-		// startScan();
+		startScan();
 
 	}
 
@@ -544,32 +544,32 @@ public class PositionActivity extends Activity {
 
 		// Focus
 
-		// int x = 0, y = 0;
-		// try {
-		// JSONObject jsonObj;
-		// jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot +
-		// "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
-		// JSONArray jsonObjArray = jsonObj.getJSONArray("points");
-		// JSONObject jsonObjCoordJsonObject;
-		//
-		// for (int i = 0; i < jsonObjArray.length(); i++) {
-		// if
-		// (jsonObjArray.getJSONObject(i).getString("pointID").equals(Global.PointId))
-		// {
-		// jsonObjCoordJsonObject =
-		// jsonObjArray.getJSONObject(i).getJSONObject("coord");
-		// x = jsonObjCoordJsonObject.getInt("x");
-		// y = jsonObjCoordJsonObject.getInt("y");
-		// break;
-		// }
-		// }
-		//
-		//
-		// } catch (JSONException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// mapView.focusPoint(x, y);
+		 int x = 0, y = 0;
+		 try {
+		 JSONObject jsonObj;
+		 jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot +
+		 "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
+		 JSONArray jsonObjArray = jsonObj.getJSONArray("points");
+		 JSONObject jsonObjCoordJsonObject;
+		
+		 for (int i = 0; i < jsonObjArray.length(); i++) {
+		 if
+		 (jsonObjArray.getJSONObject(i).getString("pointID").equals(Global.PointId))
+		 {
+		 jsonObjCoordJsonObject =
+		 jsonObjArray.getJSONObject(i).getJSONObject("coord");
+		 x = jsonObjCoordJsonObject.getInt("x");
+		 y = jsonObjCoordJsonObject.getInt("y");
+		 break;
+		 }
+		 }
+		
+		
+		 } catch (JSONException e) {
+		 // TODO Auto-generated catch block
+		 e.printStackTrace();
+		 }
+		mapView.focusPoint(x, y);
 
 	}
 

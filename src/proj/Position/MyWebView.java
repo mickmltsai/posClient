@@ -18,6 +18,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Rect;
 import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -45,8 +46,9 @@ public class MyWebView extends WebView {
 		super(context, attrs);
 		c = context;
 		this.setClickable(true);
+		
 
-		this.setInitialScale(100);
+		this.setInitialScale(120);
 	}
 
 	@Override
@@ -231,8 +233,23 @@ public class MyWebView extends WebView {
 	}
 
 	public void focusPoint(int x, int y) {
-		scrollX = (int) (x * getScale());
-		scrollY = (int) (y * getScale());
+		scrollX = (int) (((x-getWidth()/2.0) * getScale()));
+		scrollY = (int) (((y-getHeight()/2.0) * getScale()));
+		
+//		this.getWidth();
+//		this.getHeight();
+//		
+//		scrollX = x;
+//		scrollY = y;
+		Rect outRect=new Rect();
+		getWindowVisibleDisplayFrame(outRect);
+		outRect.centerX();
+		outRect.centerY();
+		Log.e("DDDDDDDDDDD", ""+outRect.bottom);
+		
+		scrollX = (int) ((x * getScale())-outRect.centerX());
+		scrollY = (int) (((y+60) * getScale())-outRect.centerY());
+		
 		scrollFlag = true;
 	}
 
