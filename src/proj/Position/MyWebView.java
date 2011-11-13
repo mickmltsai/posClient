@@ -261,8 +261,12 @@ public class MyWebView extends WebView {
 //		
 //		scrollX = x;
 //		scrollY = y;
+		
+
+		
 		Rect outRect=new Rect();
 		getWindowVisibleDisplayFrame(outRect);
+
 		outRect.centerX();
 		outRect.centerY();
 
