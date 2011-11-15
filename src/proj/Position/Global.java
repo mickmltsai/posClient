@@ -2,6 +2,7 @@ package proj.Position;
 
 import java.io.File;
 
+import android.R.integer;
 import android.os.Environment;
 
 public class Global {
@@ -12,5 +13,8 @@ public class Global {
 	public static String PointId = null;
 	public static String MapTitle = null;
 	public static String PointTitle = null;
+	
+	public static int h1 = 0;
+	public static int h2 = 0;
 
 }

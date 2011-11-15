@@ -13,6 +13,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import ntu.com.google.zxing.client.android.R;
+import android.R.integer;
+import android.R.layout;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -77,6 +79,21 @@ public class PositionActivity extends Activity {
 			setListeners();
 			makeRootDir();
 			showEmptyMap();
+
+			// LayoutInflater factory = LayoutInflater.from(this);
+			//
+			// final View v1 = factory.inflate(R.layout.main, null);
+			// int fx = 0;
+			// int fy = 0;
+			// LinearLayout l1 = (LinearLayout)
+			// v1.findViewById(R.id.linearLayout1);
+			// LinearLayout l2 = (LinearLayout)
+			// v1.findViewById(R.id.linearLayout2);
+			// l1.measure(fx, fy);
+			// l2.measure(fx, fy);
+			// Global.h1=l1.getMeasuredHeight();
+			// Global.h2=l2.getMeasuredHeight();
+
 			// showLastMapData();
 			startScan();
 
@@ -100,20 +117,20 @@ public class PositionActivity extends Activity {
 
 	}
 
-//	@Override
-//	public boolean onKeyDown(int keyCode, KeyEvent event) {
-//
-//		if (keyCode == KeyEvent.KEYCODE_BACK) {
-//
-//			return true;
-//
-//		} else {
-//
-//			return super.onKeyDown(keyCode, event);
-//
-//		}
-//
-//	}
+	// @Override
+	// public boolean onKeyDown(int keyCode, KeyEvent event) {
+	//
+	// if (keyCode == KeyEvent.KEYCODE_BACK) {
+	//
+	// return true;
+	//
+	// } else {
+	//
+	// return super.onKeyDown(keyCode, event);
+	//
+	// }
+	//
+	// }
 
 	private Boolean checkSdCard() {
 
@@ -544,7 +561,7 @@ public class PositionActivity extends Activity {
 	private void showEmptyMap() {
 		// In order to Focus when fist scan
 
-		String data = "<body style=\"margin:0;\"><img src = \"file:///sdcard/somefile.jpg \"/></body>";
+		String data = "<body style=\"margin:0;\"><img src = \"file:///android_res/drawable/emptymap.png\"/></body>";
 
 		final String mimeType = "text/html";
 		final String encoding = "utf-8";
@@ -619,7 +636,6 @@ public class PositionActivity extends Activity {
 					jsonObjCoordJsonObject = jsonObjArray.getJSONObject(i).getJSONObject("coord");
 					x = jsonObjCoordJsonObject.getInt("x");
 					y = jsonObjCoordJsonObject.getInt("y");
-					Log.e("DDDDDDDDDDDDD", "adasd" + x + " " + y);
 					break;
 				}
 			}
@@ -630,7 +646,6 @@ public class PositionActivity extends Activity {
 		}
 		if (Global.PointId != null) {
 			mapView.focusPoint(x, y);
-			Log.e("fsefsdfsdfsdfdsfdsfsdfs", "adasd" + x + " " + y);
 		}
 
 	}
@@ -826,7 +841,7 @@ public class PositionActivity extends Activity {
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, MENU_ShowPoints, 0, "瀏覽定位點");
 		menu.add(0, MENU_ChooseMap, 0, "選擇地圖");
-		//menu.add(0, MENU_RefreshData, 0, "重整圖資");
+		// menu.add(0, MENU_RefreshData, 0, "重整圖資");
 		return true;
 	}
 

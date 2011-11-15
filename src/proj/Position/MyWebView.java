@@ -235,6 +235,16 @@ public class MyWebView extends WebView {
 
 	public void focusPoint(int x, int y) {
 
+		LayoutInflater factory = LayoutInflater.from(c);
+
+		final View v1 = factory.inflate(R.layout.main, null);
+		int fx = 0;
+		int fy = 0;
+		LinearLayout l1 = (LinearLayout) v1.findViewById(R.id.linearLayout1);
+		LinearLayout l2 = (LinearLayout) v1.findViewById(R.id.linearLayout2);
+		l1.measure(fx, fy);
+		l2.measure(fx, fy);
+
 		Rect outRect = new Rect();
 		getWindowVisibleDisplayFrame(outRect);
 
@@ -242,7 +252,8 @@ public class MyWebView extends WebView {
 		outRect.centerY();
 
 		scrollX = (int) ((x * getScale()) - outRect.centerX());
-		scrollY = (int) (((y + 60) * getScale()) - outRect.centerY());
+		scrollY = (int) (((y + l1.getMeasuredHeight() + l2.getMeasuredHeight()) * getScale()) - outRect.centerY());
+		// scrollY = (int) (((y + Global.h1+Global.h2) * getScale()) - outRect.centerY());
 
 		scrollFlag = true;
 	}
