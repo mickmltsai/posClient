@@ -28,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -38,37 +39,18 @@ public class MyWebView extends WebView {
 	// AlertDialog.Builder test;
 	Bitmap pin;
 
-	int pointR = 23;
+	int pointR = 25;
 	int scrollX = 0;
 	int scrollY = 0;
 	boolean scrollFlag = true;
 
 	public MyWebView(Context context, AttributeSet attrs) {
-		// TODO Auto-generated constructor stub
 
 		super(context, attrs);
 		c = context;
 		this.setClickable(true);
-		
-//		int l1h = ((Activity)context).findViewById(R.id.linearLayout1).getHeight();
-//		int l1w =
-//		View ac = ((Activity)context).findViewById(R.id.linearLayout1);//.getWidth();
-//		
-//ac.getHeight();
-//		
-//
-//		
-//		int l2h = ((Activity)context).findViewById(R.id.linearLayout2).getHeight();
-//		int l2w =((Activity)context).findViewById(R.id.linearLayout2).getWidth();
-		
-		
-
-
-		
-		//Log.e("HFDUHFUDHSF", ""+l1h+""+l1w+""+l2h+""+l2w);
-		
-
 		this.setInitialScale(120);
+
 	}
 
 	@Override
@@ -110,16 +92,15 @@ public class MyWebView extends WebView {
 
 					float tx = (getScrollX() + event.getX()) / getScale();
 					float ty = (getScrollY() + event.getY()) / getScale();
-					//==========================================================================================================
-					//wait to fix
+					// ==========================================================================================================
+					// wait to fix
 					float cr = pointR * pointR * getScale();
 					for (int i = 0; i < jsonObjArray.length(); i++) {
 
-						float d = ((tx - (x[i])) * (tx - (x[i])) + (ty - (y[i] - 30)) * (ty - (y[i] - 30))) * getScale();
-					//wait to fix
-					//==========================================================================================================	
-						
-						
+						float d = ((tx - (x[i])) * (tx - (x[i])) + (ty - (y[i] - 35)) * (ty - (y[i] - 35))) * getScale();
+						// wait to fix
+						// ==========================================================================================================
+
 						// float sr = 0.5f;
 						// d = (float) Math.pow(d, sr);
 
@@ -253,27 +234,16 @@ public class MyWebView extends WebView {
 	}
 
 	public void focusPoint(int x, int y) {
-		scrollX = (int) (((x-getWidth()/2.0) * getScale()));
-		scrollY = (int) (((y-getHeight()/2.0) * getScale()));
-		
-//		this.getWidth();
-//		this.getHeight();
-//		
-//		scrollX = x;
-//		scrollY = y;
-		
 
-		
-		Rect outRect=new Rect();
+		Rect outRect = new Rect();
 		getWindowVisibleDisplayFrame(outRect);
 
 		outRect.centerX();
 		outRect.centerY();
 
-		
-		scrollX = (int) ((x * getScale())-outRect.centerX());
-		scrollY = (int) (((y+60) * getScale())-outRect.centerY());
-		
+		scrollX = (int) ((x * getScale()) - outRect.centerX());
+		scrollY = (int) (((y + 60) * getScale()) - outRect.centerY());
+
 		scrollFlag = true;
 	}
 

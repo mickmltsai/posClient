@@ -25,6 +25,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -63,24 +64,27 @@ public class PositionActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
+		findViews();
+		pointTitleText.setTextColor(Color.RED);
+		scan.setBackgroundResource(R.drawable.scanicon);
+
 		if (checkSdCard()) {
 			// Check SD card exist
+			// Not handle the return button and
+			// change====================================================================
+			// orientation======================================================================================================================================================
 
-			findViews();
 			setListeners();
 			makeRootDir();
-			pointTitleText.setTextColor(Color.RED);
-			scan.setBackgroundResource(R.drawable.scanicon);
-			//pointTitleText.setTextSize(35);
-			showLastMapData();
+			showEmptyMap();
+			// showLastMapData();
 			startScan();
+
 		} else {
-			// ==================================================================================================================
-			// Not test yet
 
 			Builder noSdCardDialog = new AlertDialog.Builder(this);
 			noSdCardDialog.setTitle("請插入記憶卡!");
-			noSdCardDialog.setMessage("程式將關閉!");
+			noSdCardDialog.setMessage("程式即將關閉...");
 			noSdCardDialog.setPositiveButton("確定", new DialogInterface.OnClickListener() {
 
 				@Override
@@ -90,19 +94,34 @@ public class PositionActivity extends Activity {
 
 				}
 			});
-			// ==================================================================================================================
+			noSdCardDialog.show();
+
 		}
 
 	}
 
+//	@Override
+//	public boolean onKeyDown(int keyCode, KeyEvent event) {
+//
+//		if (keyCode == KeyEvent.KEYCODE_BACK) {
+//
+//			return true;
+//
+//		} else {
+//
+//			return super.onKeyDown(keyCode, event);
+//
+//		}
+//
+//	}
+
 	private Boolean checkSdCard() {
-		// ==================================================================================================================
-		// Not done
 
-		// Environment.getExternalStorageState().equals(Environment.MEDIA_REMOVED);
-
-		return true;
-		// ==================================================================================================================
+		if (Environment.getExternalStorageState().equals(Environment.MEDIA_REMOVED)) {
+			return false;
+		} else {
+			return true;
+		}
 
 	}
 
@@ -239,8 +258,6 @@ public class PositionActivity extends Activity {
 						// But waitDownDialog.dismiss(); in scanResultOk() !!
 						// ========================================================================
 
-						showMapData(mapID);
-
 						// JsonParser parser = new JsonParser();
 						//
 						// JSONObject jsonObj = new
@@ -254,6 +271,8 @@ public class PositionActivity extends Activity {
 
 						// Assign MapTitle
 						Global.MapTitle = jsonObj.getString("title");
+
+						showMapData(mapID);
 
 						// =================================================================================================
 						String title = "";
@@ -522,6 +541,16 @@ public class PositionActivity extends Activity {
 		return look.look(Global.SDPathRoot + "/" + Global.MapDirName + "/", MapId);
 	}
 
+	private void showEmptyMap() {
+		// In order to Focus when fist scan
+
+		String data = "<body style=\"margin:0;\"><img src = \"file:///sdcard/somefile.jpg \"/></body>";
+
+		final String mimeType = "text/html";
+		final String encoding = "utf-8";
+		mapView.loadDataWithBaseURL("about:blank", data, mimeType, encoding, "");
+	}
+
 	private void showMapData(String mapId) {
 
 		// Show title
@@ -581,7 +610,7 @@ public class PositionActivity extends Activity {
 		int x = 0, y = 0;
 		try {
 			JSONObject jsonObj;
-			jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
+			jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapId + "/" + mapId + ".json"));
 			JSONArray jsonObjArray = jsonObj.getJSONArray("points");
 			JSONObject jsonObjCoordJsonObject;
 
@@ -590,6 +619,7 @@ public class PositionActivity extends Activity {
 					jsonObjCoordJsonObject = jsonObjArray.getJSONObject(i).getJSONObject("coord");
 					x = jsonObjCoordJsonObject.getInt("x");
 					y = jsonObjCoordJsonObject.getInt("y");
+					Log.e("DDDDDDDDDDDDD", "adasd" + x + " " + y);
 					break;
 				}
 			}
@@ -598,7 +628,10 @@ public class PositionActivity extends Activity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		mapView.focusPoint(x, y);
+		if (Global.PointId != null) {
+			mapView.focusPoint(x, y);
+			Log.e("fsefsdfsdfsdfdsfdsfsdfs", "adasd" + x + " " + y);
+		}
 
 	}
 
@@ -736,7 +769,7 @@ public class PositionActivity extends Activity {
 		// Show failed dialog when download faileds
 		waitDownDialog.dismiss();
 		Builder showFailInfo = new AlertDialog.Builder(PositionActivity.this);
-		showFailInfo.setMessage("請確認網路連線與插入SD卡!\n按確認繼續...");
+		showFailInfo.setMessage("請確認網路連線\n按確認繼續...");
 		showFailInfo.setTitle("下載失敗!").setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
 			@Override
@@ -793,7 +826,7 @@ public class PositionActivity extends Activity {
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, MENU_ShowPoints, 0, "瀏覽定位點");
 		menu.add(0, MENU_ChooseMap, 0, "選擇地圖");
-		menu.add(0, MENU_RefreshData, 0, "重整圖資");
+		//menu.add(0, MENU_RefreshData, 0, "重整圖資");
 		return true;
 	}
 

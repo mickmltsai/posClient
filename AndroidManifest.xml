@@ -6,14 +6,14 @@
 	Unless required by applicable law or agreed to in writing, software distributed 
 	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
 	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
-	the specific language governing permissions and limitations under the License.
+	the specific language governing permissions and limitations under the License.
 -->
 
 <!--
      versionCode is a monotonically increasing integer. I'm starting it at 
 	6 because v2.3 is the 6th version to be published. The next versionCode will 
 	be 7, regardless of whether the user-visible versionName is 2.31, 2.4, or 
-	3.0.
+	3.0.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     android:installLocation="auto"
@@ -35,7 +35,7 @@
          For Donut and above we must specify that we use the camera, but intention 
 		omit the autofocus feature in order for the app to appear in Market for no 
 		devices. While it's true that 1D barcodes will not be scannable, QR C will 
-		work. Ideally we'd show users a message to this effect on first launch.
+		work. Ideally we'd show users a message to this effect on first launch.
     -->
     <uses-feature android:name="android.hardware.camera" />
 
@@ -180,9 +180,7 @@
             android:name="proj.Position.PositionActivity"
             android:theme="@android:style/Theme.NoTitleBar" >
 
-
-			>
-			
+			> 
             
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
