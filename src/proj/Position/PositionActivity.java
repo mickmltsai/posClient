@@ -72,7 +72,8 @@ public class PositionActivity extends Activity {
 
 		if (checkSdCard()) {
 			// Check SD card exist
-			// Not handle the return button====================================================================
+			// Not handle the return
+			// button====================================================================
 			// ======================================================================================================================================================
 
 			setListeners();
@@ -105,8 +106,30 @@ public class PositionActivity extends Activity {
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					// TODO Auto-generated method stub
+
 					finish();
+
+				}
+			});
+			// noSdCardDialog.setCancelable(false);
+			noSdCardDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+
+				@Override
+				public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+					// TODO Auto-generated method stub
+					// return false;
+
+					if ((keyCode == KeyEvent.KEYCODE_SEARCH) || (keyCode == KeyEvent.KEYCODE_BACK)) {
+
+						finish();
+
+						return true;
+
+					} else {
+
+						return false;
+
+					}
 
 				}
 			});
@@ -115,21 +138,6 @@ public class PositionActivity extends Activity {
 		}
 
 	}
-
-	// @Override
-	// public boolean onKeyDown(int keyCode, KeyEvent event) {
-	//
-	// if (keyCode == KeyEvent.KEYCODE_BACK) {
-	//
-	// return true;
-	//
-	// } else {
-	//
-	// return super.onKeyDown(keyCode, event);
-	//
-	// }
-	//
-	// }
 
 	private Boolean checkSdCard() {
 
@@ -840,7 +848,7 @@ public class PositionActivity extends Activity {
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, MENU_ShowPoints, 0, "瀏覽定位點");
 		menu.add(0, MENU_ChooseMap, 0, "選擇地圖");
-		// menu.add(0, MENU_RefreshData, 0, "重整圖資");
+		// menu.add(0, MENU_RefreshData, 0, "重整圖檔");
 		return true;
 	}
 
