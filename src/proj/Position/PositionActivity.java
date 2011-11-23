@@ -13,8 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import ntu.com.google.zxing.client.android.R;
-import android.R.integer;
-import android.R.layout;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -26,30 +24,28 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class PositionActivity extends Activity {
 
 	private MyWebView mapView;
-	private ImageButton scan;
+	private ImageButton btnScan;
 
 	private TextView pointTitleText;
 	private TextView mapTitleText;
-	private String jsonURL;
-	private String mapID;
-	private String mapVer;
-	private String pointID;
-	private String potintTitle;
+
+	private String contentJsonUrl;
+	private String contentMapId;
+	private String contentMapVer;
+	private String contentPointId;
+	private String contentPotintTitle;
 
 	private Thread thread;
 	private ProgressDialog waitDownDialog;
@@ -68,33 +64,15 @@ public class PositionActivity extends Activity {
 
 		findViews();
 		pointTitleText.setTextColor(Color.RED);
-		scan.setBackgroundResource(R.drawable.scanicon);
+		btnScan.setBackgroundResource(R.drawable.scanicon);
 
 		if (checkSdCard()) {
 			// Check SD card exist
-			// Not handle the return
-			// button====================================================================
-			// ======================================================================================================================================================
 
 			setListeners();
 			makeRootDir();
 			showEmptyMap();
 
-			// LayoutInflater factory = LayoutInflater.from(this);
-			//
-			// final View v1 = factory.inflate(R.layout.main, null);
-			// int fx = 0;
-			// int fy = 0;
-			// LinearLayout l1 = (LinearLayout)
-			// v1.findViewById(R.id.linearLayout1);
-			// LinearLayout l2 = (LinearLayout)
-			// v1.findViewById(R.id.linearLayout2);
-			// l1.measure(fx, fy);
-			// l2.measure(fx, fy);
-			// Global.h1=l1.getMeasuredHeight();
-			// Global.h2=l2.getMeasuredHeight();
-
-			// showLastMapData();
 			startScan();
 
 		} else {
@@ -111,18 +89,14 @@ public class PositionActivity extends Activity {
 
 				}
 			});
-			// noSdCardDialog.setCancelable(false);
 			noSdCardDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
 
 				@Override
 				public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-					// TODO Auto-generated method stub
-					// return false;
 
 					if ((keyCode == KeyEvent.KEYCODE_SEARCH) || (keyCode == KeyEvent.KEYCODE_BACK)) {
 
 						finish();
-
 						return true;
 
 					} else {
@@ -159,12 +133,12 @@ public class PositionActivity extends Activity {
 		// Enable to zoom in/out by double tap
 		mapView.getSettings().setUseWideViewPort(true);
 
-		scan = (ImageButton) findViewById(R.id.scanBtn);
+		btnScan = (ImageButton) findViewById(R.id.scanBtn);
 
 	}
 
 	private void setListeners() {
-		scan.setOnClickListener(new OnClickListener() {
+		btnScan.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -182,7 +156,7 @@ public class PositionActivity extends Activity {
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-		// Here are two requestCode now (0,1)
+		// Here are three requestCodes now (0,1,2), scan, point list, map list
 
 		if (requestCode == 0) {
 			if (resultCode == RESULT_OK) {
@@ -195,32 +169,30 @@ public class PositionActivity extends Activity {
 					String[] contentPart = contentArray[1].split("&");
 
 					// Parse QR code content and assign value
-					jsonURL = contents + "&from=client";
+					contentJsonUrl = contents + "&from=client";
 
 					String[] tmp = contentPart[0].split("=");
-					mapID = tmp[1];
+					contentMapId = tmp[1];
 					tmp = contentPart[1].split("=");
-					mapVer = tmp[1];
+					contentMapVer = tmp[1];
 					tmp = contentPart[2].split("=");
-					pointID = tmp[1];
+					contentPointId = tmp[1];
 					tmp = contentPart[3].split("=");
-					potintTitle = tmp[1];
-
-					// Show title (move to showMapData)
-					// pointTitle.setText(title);
+					contentPotintTitle = tmp[1];
 
 					// Assign point id to global variable
-					Global.PointId = pointID;
+					Global.PointId = contentPointId;
 					// Assign title id to global variable
-					Global.PointTitle = potintTitle;
+					Global.PointTitle = contentPotintTitle;
 
-					// Check whether it need to download Json file
-					isNeedUpdate = !checkMapVerUpdate(mapID, mapVer);
+					// Check whether it need to download JSON file
+					isNeedUpdate = !checkMapVerUpdate(contentMapId, contentMapVer);
 
 					// ========================================================================
-					// If want to separate Map img and Json file, separate
+					// If want to separate Map img and JSON file, separate
 					// mapVer into 2 parts
 					// And separate download thread here (Need to Update...)
+					// isNeedUpdate need to be updated
 					// ========================================================================
 
 					// Need to Update
@@ -228,35 +200,24 @@ public class PositionActivity extends Activity {
 						waitDownDialog = new ProgressDialog(PositionActivity.this);
 						waitDownDialog.setTitle("下載中!");
 						waitDownDialog.setMessage("請稍等...");
+						waitDownDialog.setCancelable(false);
 						waitDownDialog.show();
-						// Start to download Json file
+
+						// Start to download JSON file
 						thread = new Thread(new Runnable() {
 
 							public void run() {
 
 								try {
 
-									downloadMapJson(mapID, jsonURL);
-
-									// JsonParser parser = new JsonParser();
-									// JSONObject jsonObj = new
-									// JSONObject(parser.getJsonRespon(Global.SDPathRoot
-									// + "/" + Global.MapDirName +
-									// "/last.json"));
+									downloadMapJson(contentMapId, contentJsonUrl);
 
 									JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/last.json"));
-
-									// Assign MapTitle
-									Global.MapTitle = jsonObj.getString("title");
 
 									String map = jsonObj.getString("map");
 									DownloadHelper downloader = new DownloadHelper();
 
-									// Img extension name ?
-									// ======================================================================================
-									downloader.downFile(map, Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/", "map");
-									// ======================================================================================
-									// ==================================
+									downloader.downFile(map, Global.SDPathRoot + "/" + Global.MapDirName + "/" + contentMapId + "/", "map");
 
 									// Download point's imgs
 
@@ -276,78 +237,13 @@ public class PositionActivity extends Activity {
 					} else {
 						// Not need to Update
 
-						// ========================================================================
-						// Do follow by
-						// handler.sendEmptyMessage(messageCode.DOWNLOAD_OK); ??
-						// But waitDownDialog.dismiss(); in scanResultOk() !!
-						// ========================================================================
-
-						// JsonParser parser = new JsonParser();
-						//
-						// JSONObject jsonObj = new
-						// JSONObject(parser.getJsonRespon(Global.SDPathRoot +
-						// "/" + Global.MapDirName + "/" + mapID + "/" + mapID +
-						// ".json"));
-
-						JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
-						JSONArray jsonObjArray = jsonObj.getJSONArray("points");
-						JSONObject jsonObjCoordObject;
+						JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + contentMapId + "/" + contentMapId + ".json"));
 
 						// Assign MapTitle
 						Global.MapTitle = jsonObj.getString("title");
 
-						showMapData(mapID);
-
-						// =================================================================================================
-						String title = "";
-						String desc = "";
-						Boolean tag = false;
-						for (int i = 0; i < jsonObjArray.length(); i++) {
-
-							jsonObjCoordObject = jsonObjArray.getJSONObject(i);
-
-							if (jsonObjCoordObject.getString("pointID").equals(Global.PointId)) {
-
-								title = jsonObjCoordObject.getString("title");
-								desc = jsonObjCoordObject.getString("description");
-								if (desc.equals("null") || desc.equals("")) {
-									desc = "此地點尚無描述!";
-								}
-
-								tag = true;
-								break;
-							}
-						}
-
-						// =================================================================================================
-
-						LayoutInflater factory = LayoutInflater.from(this);
-						final View v1 = factory.inflate(R.layout.contentview, null);
-
-						Builder showPointDesc = new AlertDialog.Builder(PositionActivity.this);
-						TextView contentDesc = (TextView) v1.findViewById(R.id.ttt);
-						if (tag) {
-							showPointDesc.setTitle(title);
-							contentDesc.setText(desc);
-
-						} else {
-							showPointDesc.setTitle("抱歉");
-							contentDesc.setText("此位置已被刪除!");
-						}
-
-						showPointDesc.setPositiveButton("確認", new DialogInterface.OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								// TODO Auto-generated method stub
-
-							}
-						});
-
-						contentDesc.setTextSize(20);
-						contentDesc.setTextColor(Color.YELLOW);
-						showPointDesc.setView(v1);
-						showPointDesc.show();
+						showMapData(contentMapId);
+						showPointInfo(jsonObj, Global.PointId);
 
 					}
 
@@ -377,21 +273,6 @@ public class PositionActivity extends Activity {
 			} else if (resultCode == RESULT_CANCELED) {
 				// Handle cancel
 
-				// Show AlertDialog for temporarily handle (Need to show last
-				// map)
-				/*
-				 * Builder scanCancelDialog = new
-				 * AlertDialog.Builder(PositionActivity.this);
-				 * scanCancelDialog.setMessage("請按確認繼續...");
-				 * scanCancelDialog.setTitle("掃描取消!").setPositiveButton("確認",
-				 * new DialogInterface.OnClickListener() {
-				 * 
-				 * @Override public void onClick(DialogInterface dialog, int
-				 * which) { // TODO Auto-generated method stub
-				 * 
-				 * } }); scanCancelDialog.show();
-				 */
-
 				// Assign point id to global variable
 				Global.PointId = null;
 				// Assign point title to global variable
@@ -406,61 +287,13 @@ public class PositionActivity extends Activity {
 		// After click point list's item
 		if (requestCode == 1) {
 			if (resultCode == RESULT_OK) {
-				potintTitle = Global.PointTitle;
 
 				showMapData(Global.MapId);
 
 				try {
 
 					JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json"));
-					JSONArray jsonObjArray = jsonObj.getJSONArray("points");
-					JSONObject jsonObjCoordObject;
-
-					// JSONArray jsonPhoto = jsonObjArray.getJSONObject(
-					// Integer.valueOf(Global.PointId)).getJSONArray(
-					// "photos");
-					// ===================================================================
-
-					// ===================================================================
-					String title = "";
-					String desc = "";
-					for (int i = 0; i < jsonObjArray.length(); i++) {
-
-						jsonObjCoordObject = jsonObjArray.getJSONObject(i);
-
-						if (jsonObjCoordObject.getString("pointID").equals(Global.PointId)) {
-
-							title = jsonObjCoordObject.getString("title");
-							desc = jsonObjCoordObject.getString("description");
-							if (desc.equals("null") || desc.equals("")) {
-								desc = "此地點尚無描述!";
-							}
-
-						}
-					}
-
-					LayoutInflater factory = LayoutInflater.from(PositionActivity.this);
-					final View v1 = factory.inflate(R.layout.contentview, null);
-
-					Builder showPointDesc = new AlertDialog.Builder(PositionActivity.this);
-					showPointDesc.setTitle(title);
-
-					showPointDesc.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							// TODO Auto-generated method stub
-
-						}
-					});
-					TextView contentDesc = (TextView) v1.findViewById(R.id.ttt);
-
-					contentDesc.setTextSize(20);
-					contentDesc.setTextColor(Color.YELLOW);
-					contentDesc.setText(desc);
-					showPointDesc.setView(v1);
-
-					showPointDesc.show();
+					showPointInfo(jsonObj, Global.PointId);
 
 				} catch (Exception e) {
 					// TODO: handle exception
@@ -471,8 +304,8 @@ public class PositionActivity extends Activity {
 		// After click map list's item
 		if (requestCode == 2) {
 			if (resultCode == RESULT_OK) {
+
 				showMapData(Global.MapId);
-				potintTitle = Global.PointTitle;
 
 			}
 		}
@@ -493,21 +326,13 @@ public class PositionActivity extends Activity {
 
 	}
 
-	private Boolean searchMapDir(String mapId) {
-		// Check whether the Map dir exists or not
-
-		LookHelper looker = new LookHelper();
-
-		return looker.look(Global.SDPathRoot + "/" + Global.MapDirName + "/", mapId);
-	}
-
 	private void downloadMapJson(String mapId, String downHttpUrl) throws IOException {
 		// Download the JSON file
 
 		DownloadHelper downloader = new DownloadHelper();
 
-		MakeDirHelper def = new MakeDirHelper();
-		def.make(Global.SDPathRoot + "/" + Global.MapDirName + "/", mapId);
+		MakeDirHelper maker = new MakeDirHelper();
+		maker.make(Global.SDPathRoot + "/" + Global.MapDirName + "/", mapId);
 
 		downloader.downFile(downHttpUrl, Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapId + "/", mapId + ".json");
 
@@ -534,26 +359,20 @@ public class PositionActivity extends Activity {
 		Boolean result = false;
 
 		try {
-			// JsonParser parser = new JsonParser();
-			//
-			// JSONObject jsonObj = new
-			// JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" +
-			// Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
 
-			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
+			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + contentMapId + "/" + contentMapId + ".json"));
 
 			int verNow = jsonObj.getInt("mapVer");
 
 			if (verNow >= Integer.valueOf(mapVer)) {
 				result = true;
 			}
-			// pointTitle.setText(verNow+" "+Integer.valueOf(mapVer));
 
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 			result = false;
-			// pointTitle.setText("No last map data!(JSONException)");
+
 		}
 
 		return result;
@@ -562,7 +381,7 @@ public class PositionActivity extends Activity {
 	private Boolean checkOldMapData(String MapId) {
 		// Return true if there is old map data
 		LookHelper look = new LookHelper();
-		return look.look(Global.SDPathRoot + "/" + Global.MapDirName + "/", MapId);
+		return look.look(Global.SDPathRoot + "/" + Global.MapDirName + "/" + MapId + "/", MapId + ".json");
 	}
 
 	private void showEmptyMap() {
@@ -575,16 +394,29 @@ public class PositionActivity extends Activity {
 		mapView.loadDataWithBaseURL("about:blank", data, mimeType, encoding, "");
 	}
 
+	private void showChooseMap() {
+
+		mapTitleText.setText("無選擇地圖");
+		pointTitleText.setText(null);
+
+		String data = "<body style=\"margin:0;\"><img src = \"file:///android_res/drawable/choosemap.png\"/></body>";
+
+		final String mimeType = "text/html";
+		final String encoding = "utf-8";
+		mapView.loadDataWithBaseURL("about:blank", data, mimeType, encoding, "");
+	}
+
 	private void showMapData(String mapId) {
 
-		// Show title
-		pointTitleText.setText(Global.PointTitle);
-
+		// Show map title
 		if (Global.MapTitle == null || Global.MapTitle.equals("")) {
 			mapTitleText.setText("無地圖名稱");
 		} else {
 			mapTitleText.setText(Global.MapTitle);
 		}
+
+		// Show point title
+		pointTitleText.setText(Global.PointTitle);
 
 		// Copy last downloaded JSON file in to map dir root
 		File srcFile = new File(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapId + "/" + mapId + ".json");
@@ -628,6 +460,7 @@ public class PositionActivity extends Activity {
 
 		// Update the touch points data (touchevent and onDraw method)
 		mapView.invalidate();
+		
 
 		// Focus
 
@@ -662,12 +495,6 @@ public class PositionActivity extends Activity {
 
 		try {
 
-			// JsonParser parser = new JsonParser();
-			//
-			// JSONObject jsonObj = new
-			// JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" +
-			// Global.MapDirName + "/" + "last.json"));
-
 			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + "last.json"));
 
 			// Assign MapTitle
@@ -676,6 +503,7 @@ public class PositionActivity extends Activity {
 			String mapId = jsonObj.getString("mapID");
 
 			showMapData(mapId);
+
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -695,68 +523,94 @@ public class PositionActivity extends Activity {
 	}
 
 	private void scanResultOk() {
-		// Show map data when download finished
-		showMapData(mapID);
-		waitDownDialog.dismiss();
-
 		try {
 
-			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
-			JSONArray jsonObjArray = jsonObj.getJSONArray("points");
-			JSONObject jsonObjCoordObject;
+			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + contentMapId + "/" + contentMapId + ".json"));
 
 			// Assign MapTitle
 			Global.MapTitle = jsonObj.getString("title");
 
-			// JSONArray jsonPhoto = jsonObjArray.getJSONObject(
-			// Integer.valueOf(Global.PointId)).getJSONArray(
-			// "photos");
-			// ===================================================================
+			// Show map data when download finished
+			showMapData(contentMapId);
+			waitDownDialog.dismiss();
 
-			// ===================================================================
-			String title = "";
-			String desc = "";
+			showPointInfo(jsonObj, Global.PointId);
+
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+
+	private void showPointInfo(JSONObject jsonObj, String pointId) {
+		// JSONArray jsonPhoto = jsonObjArray.getJSONObject(
+		// Integer.valueOf(Global.PointId)).getJSONArray(
+		// "photos");
+		// ===================================================================
+
+		// ===================================================================
+
+		JSONArray jsonObjArray;
+		JSONObject jsonObjCoordObject;
+
+		String title = "";
+		String desc = "";
+
+		// For check deleted point(non found)
+		Boolean tag = false;
+
+		try {
+			jsonObjArray = jsonObj.getJSONArray("points");
+
 			for (int i = 0; i < jsonObjArray.length(); i++) {
 
 				jsonObjCoordObject = jsonObjArray.getJSONObject(i);
 
-				if (jsonObjCoordObject.getString("pointID").equals(Global.PointId)) {
+				if (jsonObjCoordObject.getString("pointID").equals(pointId)) {
 
 					title = jsonObjCoordObject.getString("title");
 					desc = jsonObjCoordObject.getString("description");
 					if (desc.equals("null") || desc.equals("")) {
 						desc = "此地點尚無描述!";
 					}
-
+					tag = true;
+					break;
 				}
 			}
 
-			LayoutInflater factory = LayoutInflater.from(PositionActivity.this);
-			final View v1 = factory.inflate(R.layout.contentview, null);
-
-			Builder showPointDesc = new AlertDialog.Builder(PositionActivity.this);
-			showPointDesc.setTitle(title);
-
-			showPointDesc.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					// TODO Auto-generated method stub
-
-				}
-			});
-			TextView contentDesc = (TextView) v1.findViewById(R.id.ttt);
-
-			contentDesc.setTextSize(20);
-			contentDesc.setTextColor(Color.YELLOW);
-			contentDesc.setText(desc);
-			showPointDesc.setView(v1);
-
-			showPointDesc.show();
-
-		} catch (Exception e) {
-			// TODO: handle exception
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
+		LayoutInflater factory = LayoutInflater.from(PositionActivity.this);
+		final View v = factory.inflate(R.layout.contentview, null);
+
+		Builder showPointDesc = new AlertDialog.Builder(PositionActivity.this);
+
+		showPointDesc.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+
+			}
+		});
+
+		TextView contentDesc = (TextView) v.findViewById(R.id.textDesc);
+
+		if (tag) {
+			showPointDesc.setTitle(title);
+			contentDesc.setText(desc);
+
+		} else {
+			showPointDesc.setTitle("抱歉");
+			contentDesc.setText("此位置已被刪除!");
+		}
+
+		contentDesc.setTextSize(20);
+		contentDesc.setTextColor(Color.YELLOW);
+
+		showPointDesc.setView(v);
+		showPointDesc.show();
 	}
 
 	private void scanResultfailed() {
@@ -764,13 +618,13 @@ public class PositionActivity extends Activity {
 		Boolean isOldMapData;
 
 		// Show old map data if it exist otherwise show last map
-		isOldMapData = checkOldMapData(mapID);
+		isOldMapData = checkOldMapData(contentMapId);
+
 		if (isOldMapData) {
-			showMapData(mapID);
 
 			JSONObject jsonObj;
 			try {
-				jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapID + "/" + mapID + ".json"));
+				jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + contentMapId + "/" + contentMapId + ".json"));
 
 				// Assign MapTitle
 				Global.MapTitle = jsonObj.getString("title");
@@ -782,13 +636,12 @@ public class PositionActivity extends Activity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			showMapData(contentMapId);
 		} else {
-			showLastMapData();
+			showChooseMap();
 		}
-		// ===========================================================================================
-		// SD card check ?
 
-		// Show failed dialog when download faileds
+		// Show failed dialog when download failed
 		waitDownDialog.dismiss();
 		Builder showFailInfo = new AlertDialog.Builder(PositionActivity.this);
 		showFailInfo.setMessage("請確認網路連線\n按確認繼續...");
@@ -799,11 +652,8 @@ public class PositionActivity extends Activity {
 
 			}
 		});
-		showFailInfo.show();
-		// ===========================================================================================
-	}
 
-	private void cleanFailFile() {
+		showFailInfo.show();
 
 	}
 
@@ -826,14 +676,6 @@ public class PositionActivity extends Activity {
 
 				break;
 			}
-
-			// // Show old map data if it exist otherwise show last map
-			// isOldMapData = checkOldMapData(mapID);
-			// if (isOldMapData) {
-			// showMapData(mapID);
-			// } else {
-			// showLastMapData();
-			// }
 
 			super.handleMessage(msg);
 		}
@@ -860,7 +702,7 @@ public class PositionActivity extends Activity {
 			Intent intent1 = new Intent();
 			intent1.setClass(PositionActivity.this, ShowPointList.class);
 			startActivityForResult(intent1, 1);
-			// startActivity(intent);
+
 			break;
 		case MENU_ChooseMap:
 			Intent intent2 = new Intent();

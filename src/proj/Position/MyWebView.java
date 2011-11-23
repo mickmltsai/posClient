@@ -1,16 +1,10 @@
 package proj.Position;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-
 import ntu.com.google.zxing.client.android.R;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import android.R.integer;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
@@ -21,14 +15,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Rect;
-import android.os.Environment;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -36,10 +27,11 @@ public class MyWebView extends WebView {
 
 	Context c;
 
-	// AlertDialog.Builder test;
 	Bitmap pin;
 
+	// Touch range
 	int pointR = 25;
+
 	int scrollX = 0;
 	int scrollY = 0;
 	boolean scrollFlag = true;
@@ -62,15 +54,9 @@ public class MyWebView extends WebView {
 			int[] y;
 
 			if (Global.MapId != null) {
-				// Not check touchEvent when MapId = null
+				// No action on touchEvent when MapId = null
 
 				// Parse x y points into x,y arrays
-				// JsonParser parser = new JsonParser();
-				//
-				// JSONObject jsonObj = new
-				// JSONObject(parser.getJsonRespon(Global.SDPathRoot + "/" +
-				// Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId +
-				// ".json"));
 
 				JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json"));
 				JSONArray jsonObjArray = jsonObj.getJSONArray("points");
@@ -94,38 +80,30 @@ public class MyWebView extends WebView {
 					float ty = (getScrollY() + event.getY()) / getScale();
 					// ==========================================================================================================
 					// wait to fix
-					float cr = pointR * pointR * getScale();
+					float cr = pointR * pointR;
 					for (int i = 0; i < jsonObjArray.length(); i++) {
 
-						float d = ((tx - (x[i])) * (tx - (x[i])) + (ty - (y[i] - 35)) * (ty - (y[i] - 35))) * getScale();
+						float d = ((tx - (x[i])) * (tx - (x[i])) + (ty - (y[i] - 35)) * (ty - (y[i] - 35)));
 						// wait to fix
 						// ==========================================================================================================
 
-						// float sr = 0.5f;
-						// d = (float) Math.pow(d, sr);
-
 						if (d <= cr) {
-							// Toast.makeText(c, "test", Toast.LENGTH_SHORT)
-							// .show();
 
 							LayoutInflater factory = LayoutInflater.from(c);
-							final View v1 = factory.inflate(R.layout.contentview, null);
+							final View v = factory.inflate(R.layout.contentview, null);
 
 							Builder showPointDesc;
 							showPointDesc = new AlertDialog.Builder(c);
-							// testt.setMessage(jsonObjArray.getJSONObject(i)
-							// .getString("description"));
 							showPointDesc.setTitle(jsonObjArray.getJSONObject(i).getString("title")).setPositiveButton("½T»{", new DialogInterface.OnClickListener() {
 
 								@Override
 								public void onClick(DialogInterface dialog, int which) {
-									// TODO Auto-generated
-									// method stub
+									// TODO Auto-generated method stub
 
 								}
-							}).setView(v1);
+							}).setView(v);
 
-							TextView contentDesc = (TextView) v1.findViewById(R.id.ttt);
+							TextView contentDesc = (TextView) v.findViewById(R.id.textDesc);
 							contentDesc.setTextSize(20);
 							contentDesc.setTextColor(Color.YELLOW);
 
@@ -158,21 +136,8 @@ public class MyWebView extends WebView {
 		try {
 
 			// Parse x y points into x,y arrays
-			File SD = Environment.getExternalStorageDirectory();
-			File test = new File(SD + "/Position/" + Global.MapId + "/" + Global.MapId + ".json");
 
-			FileReader in = new FileReader(test);
-			BufferedReader stdin = new BufferedReader(in);
-
-			String jsonString = "";
-			String jsonString1 = null;
-			while (((jsonString1 = stdin.readLine()) != null)) {
-				jsonString = jsonString + jsonString1;
-			}
-			in.close();
-
-			JSONObject jsonObj = new JSONObject(jsonString);
-
+			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json"));
 			JSONArray jsonObjArray = jsonObj.getJSONArray("points");
 
 			x = new int[jsonObjArray.length()];
@@ -188,21 +153,16 @@ public class MyWebView extends WebView {
 
 			}
 
-			// float x = pointX * getScale();
-			// float y = pointY * getScale();
-
-			// float r = pointR; // * getScale();
-
 			Matrix m = new Matrix();
 			JSONObject jsonObjCoordObject;
 			Bitmap b;
 
-			// Change pin scale when zoom I/O
+			// Resize pin when zoom I/O
 			m.postScale(getScale(), getScale());
 
 			for (int i = 0; i < jsonObjArray.length(); i++) {
-				float xx = x[i] * getScale();
-				float yy = y[i] * getScale();
+				float bx = x[i] * getScale();
+				float by = y[i] * getScale();
 
 				jsonObjCoordObject = jsonObjArray.getJSONObject(i);
 
@@ -217,7 +177,7 @@ public class MyWebView extends WebView {
 
 				b = Bitmap.createBitmap(pin, 0, 0, pin.getWidth(), pin.getHeight(), m, true);
 				// ====================================================================================================
-				canvas.drawBitmap(b, xx - ((b.getWidth() + 1 * getScale()) / 2), yy - (b.getHeight() + 1 * getScale()), null);
+				canvas.drawBitmap(b, bx - ((b.getWidth() + 1 * getScale()) / 2), by - (b.getHeight() + 1 * getScale()), null);
 				// ====================================================================================================
 
 			}
@@ -237,11 +197,11 @@ public class MyWebView extends WebView {
 
 		LayoutInflater factory = LayoutInflater.from(c);
 
-		final View v1 = factory.inflate(R.layout.main, null);
+		final View v = factory.inflate(R.layout.main, null);
 		int fx = 0;
 		int fy = 0;
-		LinearLayout l1 = (LinearLayout) v1.findViewById(R.id.linearLayout1);
-		LinearLayout l2 = (LinearLayout) v1.findViewById(R.id.linearLayout2);
+		LinearLayout l1 = (LinearLayout) v.findViewById(R.id.linearLayout1);
+		LinearLayout l2 = (LinearLayout) v.findViewById(R.id.linearLayout2);
 		l1.measure(fx, fy);
 		l2.measure(fx, fy);
 
@@ -252,8 +212,7 @@ public class MyWebView extends WebView {
 		outRect.centerY();
 
 		scrollX = (int) ((x * getScale()) - outRect.centerX());
-		scrollY = (int) (((y + l1.getMeasuredHeight() + l2.getMeasuredHeight()) * getScale()) - outRect.centerY());
-		// scrollY = (int) (((y + Global.h1+Global.h2) * getScale()) - outRect.centerY());
+		scrollY = (int) (((y * getScale()) + l1.getMeasuredHeight() + l2.getMeasuredHeight()) - outRect.centerY());
 
 		scrollFlag = true;
 	}
