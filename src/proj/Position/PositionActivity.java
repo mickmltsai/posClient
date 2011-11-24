@@ -180,13 +180,15 @@ public class PositionActivity extends Activity {
 					tmp = contentPart[3].split("=");
 					contentPotintTitle = tmp[1];
 
+					// Assign map id to global variable
+					Global.MapId = contentMapId;
 					// Assign point id to global variable
 					Global.PointId = contentPointId;
 					// Assign title id to global variable
 					Global.PointTitle = contentPotintTitle;
 
 					// Check whether it need to download JSON file
-					isNeedUpdate = !checkMapVerUpdate(contentMapId, contentMapVer);
+					isNeedUpdate = !checkMapVerUpdate(Global.MapId, contentMapVer);
 
 					// ========================================================================
 					// If want to separate Map img and JSON file, separate
@@ -210,14 +212,14 @@ public class PositionActivity extends Activity {
 
 								try {
 
-									downloadMapJson(contentMapId, contentJsonUrl);
+									downloadMapJson(Global.MapId, contentJsonUrl);
 
 									JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/last.json"));
 
 									String map = jsonObj.getString("map");
 									DownloadHelper downloader = new DownloadHelper();
 
-									downloader.downFile(map, Global.SDPathRoot + "/" + Global.MapDirName + "/" + contentMapId + "/", "map");
+									downloader.downFile(map, Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/", "map");
 
 									// Download point's imgs
 
@@ -237,12 +239,12 @@ public class PositionActivity extends Activity {
 					} else {
 						// Not need to Update
 
-						JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + contentMapId + "/" + contentMapId + ".json"));
+						JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json"));
 
 						// Assign MapTitle
 						Global.MapTitle = jsonObj.getString("title");
 
-						showMapData(contentMapId);
+						showMapData(Global.MapId);
 						showPointInfo(jsonObj, Global.PointId);
 
 					}
@@ -360,7 +362,7 @@ public class PositionActivity extends Activity {
 
 		try {
 
-			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + contentMapId + "/" + contentMapId + ".json"));
+			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json"));
 
 			int verNow = jsonObj.getInt("mapVer");
 
@@ -460,7 +462,6 @@ public class PositionActivity extends Activity {
 
 		// Update the touch points data (touchevent and onDraw method)
 		mapView.invalidate();
-		
 
 		// Focus
 
@@ -525,13 +526,13 @@ public class PositionActivity extends Activity {
 	private void scanResultOk() {
 		try {
 
-			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + contentMapId + "/" + contentMapId + ".json"));
+			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json"));
 
 			// Assign MapTitle
 			Global.MapTitle = jsonObj.getString("title");
 
 			// Show map data when download finished
-			showMapData(contentMapId);
+			showMapData(Global.MapId);
 			waitDownDialog.dismiss();
 
 			showPointInfo(jsonObj, Global.PointId);
@@ -618,13 +619,13 @@ public class PositionActivity extends Activity {
 		Boolean isOldMapData;
 
 		// Show old map data if it exist otherwise show last map
-		isOldMapData = checkOldMapData(contentMapId);
+		isOldMapData = checkOldMapData(Global.MapId);
 
 		if (isOldMapData) {
 
 			JSONObject jsonObj;
 			try {
-				jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + contentMapId + "/" + contentMapId + ".json"));
+				jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json"));
 
 				// Assign MapTitle
 				Global.MapTitle = jsonObj.getString("title");
@@ -636,7 +637,7 @@ public class PositionActivity extends Activity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			showMapData(contentMapId);
+			showMapData(Global.MapId);
 		} else {
 			showChooseMap();
 		}
