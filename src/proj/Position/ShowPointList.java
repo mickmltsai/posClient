@@ -87,8 +87,8 @@ public class ShowPointList extends Activity {
 					public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 						try {
 
-							Global.PointId = jsonObjArray.getJSONObject((int) arg0.getItemIdAtPosition((int) arg3)).getString("pointID");
-							Global.PointTitle = jsonObjArray.getJSONObject((int) arg0.getItemIdAtPosition((int) arg3)).getString("title");
+							Global.PointId = jsonObjArray.getJSONObject(arg2).getString("pointID");
+							Global.PointTitle = jsonObjArray.getJSONObject(arg2).getString("title");
 
 							Intent intent = new Intent();
 							setResult(RESULT_OK, intent);

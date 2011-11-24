@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import ntu.com.google.zxing.client.android.R;
-import android.R.integer;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -51,15 +50,20 @@ public class ShowMapList extends Activity {
 
 		File rootDir = new File(Global.SDPathRoot + "/" + Global.MapDirName + "/");
 		fileList = rootDir.listFiles();
+
+		// Check if there is no map
 		int count = 0;
 		for (int j = 0; j < fileList.length; j++) {
 			if (fileList[j].isDirectory()) {
-				count++;
+				count = count + 1;
 			}
 
 		}
 
-		if (count != 0) {
+		if (count == 0) {
+			title.setText("無任何地圖");
+		} else {
+
 			ArrayList<String> mStrings = new ArrayList<String>();
 
 			mapIdMapping = new ArrayList<String>();
@@ -110,8 +114,6 @@ public class ShowMapList extends Activity {
 					finish();
 				}
 			});
-		}else {
-			title.setText("無任何地圖");
 		}
 
 	}
