@@ -1,5 +1,9 @@
 package proj.Position;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+
 import ntu.com.google.zxing.client.android.R;
 
 import org.json.JSONArray;
@@ -134,10 +138,26 @@ public class MyWebView extends WebView {
 		int[] x;
 		int[] y;
 		try {
-
 			// Parse x y points into x,y arrays
 
-			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json"));
+			// Old Parse method for showing graphical layout in Layout Editor
+			File jsonFile = new File(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json");
+
+			FileReader in = new FileReader(jsonFile);
+			BufferedReader stdin = new BufferedReader(in);
+			String jsonString = "";
+			String jsonString1 = null;
+
+			while (((jsonString1 = stdin.readLine()) != null)) {
+				jsonString = jsonString + jsonString1;
+			}
+			in.close();
+
+			// JSONObject jsonObj = new
+			// JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" +
+			// Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId +
+			// ".json"));
+			JSONObject jsonObj = new JSONObject(jsonString);
 			JSONArray jsonObjArray = jsonObj.getJSONArray("points");
 
 			x = new int[jsonObjArray.length()];
