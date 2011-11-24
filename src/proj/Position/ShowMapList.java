@@ -2,6 +2,7 @@ package proj.Position;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,8 +13,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -63,22 +64,25 @@ public class ShowMapList extends Activity {
 		if (count == 0) {
 			title.setText("無任何地圖");
 		} else {
+			ArrayList<HashMap<String, String>> data = new ArrayList<HashMap<String, String>>();
 
-			ArrayList<String> mStrings = new ArrayList<String>();
+			ArrayList<String> mStringsTitle = new ArrayList<String>();
+			ArrayList<String> mStringsVer = new ArrayList<String>();
 
 			mapIdMapping = new ArrayList<String>();
 
-			// Adapt map's title
+			// Adapt map's title and ver.
 			for (int j = 0; j < fileList.length; j++) {
 				if (fileList[j].isDirectory()) {
 					try {
 						jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + fileList[j].getName() + "/" + fileList[j].getName() + ".json"));
 
 						if (jsonObj.getString("title") == null || jsonObj.getString("title").equals("")) {
-							mStrings.add("無地圖名稱");
+							mStringsTitle.add("無地圖名稱");
 						} else {
-							mStrings.add(jsonObj.getString("title"));
+							mStringsTitle.add(jsonObj.getString("title"));
 						}
+						mStringsVer.add("版本號: "+jsonObj.getString("mapVer"));
 					} catch (JSONException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -88,10 +92,17 @@ public class ShowMapList extends Activity {
 
 			}
 
-			list.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mStrings));
+			for (int i = 0; i < mStringsTitle.size(); i++) {
+				HashMap<String, String> item = new HashMap<String, String>();
+				item.put("mapTitle", mStringsTitle.get(i));
+				item.put("mapVer", mStringsVer.get(i));
+				data.add(item);
+			}
+
+			list.setAdapter(new SimpleAdapter(this, data, android.R.layout.simple_list_item_2, new String[] { "mapTitle", "mapVer" }, new int[] { android.R.id.text1, android.R.id.text2 }));
 			// set filter
 			list.setTextFilterEnabled(true);
-
+			
 			// Handle after click map item
 			list.setOnItemClickListener(new OnItemClickListener() {
 
@@ -114,6 +125,7 @@ public class ShowMapList extends Activity {
 					finish();
 				}
 			});
+
 		}
 
 	}
