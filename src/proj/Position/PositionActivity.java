@@ -438,7 +438,6 @@ public class PositionActivity extends Activity {
 			out.close();
 		} catch (Exception e) {
 			// TODO: handle exception
-			pointTitleText.setText("showMapData error!");
 		}
 
 		// Enable to zoom in/out
@@ -462,32 +461,6 @@ public class PositionActivity extends Activity {
 
 		// Update the touch points data (touchevent and onDraw method)
 		mapView.invalidate();
-
-		// Focus
-
-		int x = 0, y = 0;
-		try {
-			JSONObject jsonObj;
-			jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapId + "/" + mapId + ".json"));
-			JSONArray jsonObjArray = jsonObj.getJSONArray("points");
-			JSONObject jsonObjCoordJsonObject;
-
-			for (int i = 0; i < jsonObjArray.length(); i++) {
-				if (jsonObjArray.getJSONObject(i).getString("pointID").equals(Global.PointId)) {
-					jsonObjCoordJsonObject = jsonObjArray.getJSONObject(i).getJSONObject("coord");
-					x = jsonObjCoordJsonObject.getInt("x");
-					y = jsonObjCoordJsonObject.getInt("y");
-					break;
-				}
-			}
-
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if (Global.PointId != null) {
-			mapView.focusPoint(x, y);
-		}
 
 	}
 
@@ -553,14 +526,31 @@ public class PositionActivity extends Activity {
 		JSONArray jsonObjArray;
 		JSONObject jsonObjCoordObject;
 
-		String title = "";
-		String desc = "";
-
-		// For check deleted point(non found)
-		Boolean tag = false;
-
 		try {
 			jsonObjArray = jsonObj.getJSONArray("points");
+			JSONObject jsonObjCoordJsonObject;
+
+			// Focus
+			int x = 0, y = 0;
+			for (int i = 0; i < jsonObjArray.length(); i++) {
+				if (jsonObjArray.getJSONObject(i).getString("pointID").equals(pointId)) {
+					jsonObjCoordJsonObject = jsonObjArray.getJSONObject(i).getJSONObject("coord");
+					x = jsonObjCoordJsonObject.getInt("x");
+					y = jsonObjCoordJsonObject.getInt("y");
+					break;
+				}
+			}
+
+			if (pointId != null) {
+				mapView.focusPoint(x, y);
+			}
+
+			// Show point's information
+			String title = "";
+			String desc = "";
+
+			// For check deleted point(non found)
+			Boolean tag = false;
 
 			for (int i = 0; i < jsonObjArray.length(); i++) {
 
@@ -578,40 +568,39 @@ public class PositionActivity extends Activity {
 				}
 			}
 
+			LayoutInflater factory = LayoutInflater.from(PositionActivity.this);
+			final View v = factory.inflate(R.layout.contentview, null);
+
+			Builder showPointDesc = new AlertDialog.Builder(PositionActivity.this);
+
+			showPointDesc.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+
+				}
+			});
+
+			TextView contentDesc = (TextView) v.findViewById(R.id.textDesc);
+
+			if (tag) {
+				showPointDesc.setTitle(title);
+				contentDesc.setText(desc);
+
+			} else {
+				showPointDesc.setTitle("抱歉");
+				contentDesc.setText("此位置已被刪除!");
+			}
+
+			contentDesc.setTextSize(20);
+			contentDesc.setTextColor(Color.YELLOW);
+
+			showPointDesc.setView(v);
+			showPointDesc.show();
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		LayoutInflater factory = LayoutInflater.from(PositionActivity.this);
-		final View v = factory.inflate(R.layout.contentview, null);
-
-		Builder showPointDesc = new AlertDialog.Builder(PositionActivity.this);
-
-		showPointDesc.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-
-			}
-		});
-
-		TextView contentDesc = (TextView) v.findViewById(R.id.textDesc);
-
-		if (tag) {
-			showPointDesc.setTitle(title);
-			contentDesc.setText(desc);
-
-		} else {
-			showPointDesc.setTitle("抱歉");
-			contentDesc.setText("此位置已被刪除!");
-		}
-
-		contentDesc.setTextSize(20);
-		contentDesc.setTextColor(Color.YELLOW);
-
-		showPointDesc.setView(v);
-		showPointDesc.show();
 	}
 
 	private void scanResultfailed() {
@@ -685,6 +674,7 @@ public class PositionActivity extends Activity {
 	protected static final int MENU_ShowPoints = Menu.FIRST;
 	protected static final int MENU_ChooseMap = Menu.FIRST + 1;
 	protected static final int MENU_RefreshData = Menu.FIRST + 2;
+	protected static final int MENU_LastPosition = Menu.FIRST + 3;
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -692,6 +682,7 @@ public class PositionActivity extends Activity {
 		menu.add(0, MENU_ShowPoints, 0, "瀏覽定位點");
 		menu.add(0, MENU_ChooseMap, 0, "選擇地圖");
 		// menu.add(0, MENU_RefreshData, 0, "重整圖檔");
+		menu.add(0, MENU_LastPosition, 0, "上次位置");
 		return true;
 	}
 
@@ -712,6 +703,9 @@ public class PositionActivity extends Activity {
 
 			break;
 		case MENU_RefreshData:
+
+			break;
+		case MENU_LastPosition:
 
 			break;
 		}
