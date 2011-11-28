@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -68,6 +69,7 @@ public class PositionActivity extends Activity {
 		findViews();
 		pointTitleText.setTextColor(Color.RED);
 		btnScan.setBackgroundResource(R.drawable.scanicon);
+		settings = getPreferences(MODE_PRIVATE);
 
 		if (checkSdCard()) {
 			// Check SD card exist
@@ -190,8 +192,8 @@ public class PositionActivity extends Activity {
 					// Assign title id to global variable
 					Global.PointTitle = contentPotintTitle;
 
-					// Assign point id to last scanned point id
-					lastPointId = contentPointId;
+					// Assign point id preferences
+					settings.edit().putString(Global.MapId, Global.PointId).commit();
 
 					// Check whether it need to download JSON file
 					isNeedUpdate = !checkMapVerUpdate(Global.MapId, contentMapVer);
@@ -530,6 +532,7 @@ public class PositionActivity extends Activity {
 
 			if (pointId != null) {
 				mapView.focusPoint(x, y);
+				mapView.invalidate();
 			}
 
 			// Show point's information
@@ -560,7 +563,7 @@ public class PositionActivity extends Activity {
 
 			Builder showPointDesc = new AlertDialog.Builder(PositionActivity.this);
 
-			showPointDesc.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			showPointDesc.setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
@@ -592,22 +595,69 @@ public class PositionActivity extends Activity {
 
 	private void showLastPosition() {
 
+		lastPointId = settings.getString(Global.MapId, "");
+
+		if (!lastPointId.equals("")) {
+
+			JSONObject jsonObj;
+			JSONArray jsonObjArray;
+
+			try {
+
+				jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json"));
+
+				jsonObjArray = jsonObj.getJSONArray("points");
+
+				for (int i = 0; i < jsonObjArray.length(); i++) {
+					if (jsonObjArray.getJSONObject(i).getString("pointID").equals(lastPointId)) {
+						Global.PointTitle = jsonObjArray.getJSONObject(i).getString("title");
+						break;
+					}
+				}
+
+				Global.PointId = lastPointId;
+
+				// Show point title
+				pointTitleText.setText(Global.PointTitle);
+
+				showPointInfo(jsonObj, lastPointId);
+
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+
+			Builder noLastPointDialog = new AlertDialog.Builder(PositionActivity.this);
+			noLastPointDialog.setPositiveButton("確認", new DialogInterface.OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+
+				}
+			});
+			noLastPointDialog.setTitle("無上次掃描記錄");
+			noLastPointDialog.setMessage("請按確認繼續...");
+			noLastPointDialog.show();
+
+		}
+
 	}
 
 	private void scanResultOk() {
 		try {
-	
+
 			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json"));
-	
+
 			// Assign MapTitle
 			Global.MapTitle = jsonObj.getString("title");
-	
+
 			// Show map data when download finished
 			showMapData(Global.MapId);
 			waitDownDialog.dismiss();
-	
+
 			showPointInfo(jsonObj, Global.PointId);
-	
+
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
