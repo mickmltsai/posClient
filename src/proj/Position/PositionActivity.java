@@ -19,6 +19,7 @@ import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
@@ -46,6 +47,8 @@ public class PositionActivity extends Activity {
 	private String contentMapVer;
 	private String contentPointId;
 	private String contentPotintTitle;
+	private String lastPointId;
+	private SharedPreferences settings;
 
 	private Thread thread;
 	private ProgressDialog waitDownDialog;
@@ -186,6 +189,9 @@ public class PositionActivity extends Activity {
 					Global.PointId = contentPointId;
 					// Assign title id to global variable
 					Global.PointTitle = contentPotintTitle;
+
+					// Assign point id to last scanned point id
+					lastPointId = contentPointId;
 
 					// Check whether it need to download JSON file
 					isNeedUpdate = !checkMapVerUpdate(Global.MapId, contentMapVer);
@@ -420,7 +426,7 @@ public class PositionActivity extends Activity {
 		// Show point title
 		pointTitleText.setText(Global.PointTitle);
 
-		// Copy last downloaded JSON file in to map dir root
+		// Copy last downloaded JSON file into map dir root
 		File srcFile = new File(Global.SDPathRoot + "/" + Global.MapDirName + "/" + mapId + "/" + mapId + ".json");
 		File dstFile = new File(Global.SDPathRoot + "/" + Global.MapDirName + "/" + "last.json");
 
@@ -494,25 +500,6 @@ public class PositionActivity extends Activity {
 
 		}
 
-	}
-
-	private void scanResultOk() {
-		try {
-
-			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json"));
-
-			// Assign MapTitle
-			Global.MapTitle = jsonObj.getString("title");
-
-			// Show map data when download finished
-			showMapData(Global.MapId);
-			waitDownDialog.dismiss();
-
-			showPointInfo(jsonObj, Global.PointId);
-
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
 	}
 
 	private void showPointInfo(JSONObject jsonObj, String pointId) {
@@ -600,6 +587,29 @@ public class PositionActivity extends Activity {
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	private void showLastPosition() {
+
+	}
+
+	private void scanResultOk() {
+		try {
+	
+			JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + Global.MapId + ".json"));
+	
+			// Assign MapTitle
+			Global.MapTitle = jsonObj.getString("title");
+	
+			// Show map data when download finished
+			showMapData(Global.MapId);
+			waitDownDialog.dismiss();
+	
+			showPointInfo(jsonObj, Global.PointId);
+	
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 	}
 
@@ -706,6 +716,7 @@ public class PositionActivity extends Activity {
 
 			break;
 		case MENU_LastPosition:
+			showLastPosition();
 
 			break;
 		}
