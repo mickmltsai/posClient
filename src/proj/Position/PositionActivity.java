@@ -605,6 +605,7 @@ public class PositionActivity extends Activity {
 				contentDesc.setText("此位置已被刪除!");
 			}
 			
+			//For show point image
 			LookHelper look = new LookHelper();
 			if (look.look(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/", pointId)) {
 				Bitmap b= BitmapFactory.decodeFile(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/"+ pointId);

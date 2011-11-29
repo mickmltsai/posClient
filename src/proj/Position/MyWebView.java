@@ -20,10 +20,12 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -106,7 +108,8 @@ public class MyWebView extends WebView {
 
 								}
 							}).setView(v);
-
+							
+							ImageView contentImg = (ImageView) v.findViewById(R.id.pointImg);
 							TextView contentDesc = (TextView) v.findViewById(R.id.textDesc);
 							contentDesc.setTextSize(20);
 							contentDesc.setTextColor(Color.YELLOW);
@@ -116,6 +119,22 @@ public class MyWebView extends WebView {
 							} else {
 								contentDesc.setText(jsonObjArray.getJSONObject(i).getString("description"));
 							}
+							
+							//For show point image
+							LookHelper look = new LookHelper();
+							if (look.look(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/", jsonObjArray.getJSONObject(i).getString("pointID"))) {
+								Bitmap b= BitmapFactory.decodeFile(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/"+ jsonObjArray.getJSONObject(i).getString("pointID"));
+								contentImg.setImageBitmap(b);
+								int fx = 0;
+								int fy = 0;
+								contentImg.measure(fx, fy);
+								Log.e("@@@@@@@@@@@@", "dss"+contentImg.getHeight()+"fdgfg"+b.getHeight());
+	
+								
+							}else {
+								//contentImg.setVisibility(visibility);
+							}
+							
 							showPointDesc.show();
 							break;
 						}
