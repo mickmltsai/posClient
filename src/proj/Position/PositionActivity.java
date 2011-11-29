@@ -20,6 +20,8 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
@@ -33,6 +35,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class PositionActivity extends Activity {
@@ -213,7 +216,7 @@ public class PositionActivity extends Activity {
 						waitDownDialog.setCancelable(false);
 						waitDownDialog.show();
 
-						// Start to download JSON file
+						// Start to download updated file
 						thread = new Thread(new Runnable() {
 
 							public void run() {
@@ -223,15 +226,34 @@ public class PositionActivity extends Activity {
 									downloadMapJson(Global.MapId, contentJsonUrl);
 
 									JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/last.json"));
+									JSONArray jsonObjArray;
 
 									String map = jsonObj.getString("map");
 									DownloadHelper downloader = new DownloadHelper();
 
-									downloader.downFile(map, Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/", "map");
+									LookHelper look = new LookHelper();
 
-									// Download point's imgs
+									if (!look.look(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/", "map")) {
+										// Check does it need to download map
+										// image
 
-									// ==================================
+										downloader.downFile(map, Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/", "map");
+									}
+
+									jsonObjArray = jsonObj.getJSONArray("points");
+
+									//Do fast show img?=====================================================================================================
+									try {
+										// Download point's images
+										for (int i = 0; i < jsonObjArray.length(); i++) {
+											if (!jsonObjArray.getJSONObject(i).getString("photo").equals("")) {
+												downloader.downFile(jsonObjArray.getJSONObject(i).getString("photo"), Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/", jsonObjArray.getJSONObject(i).getString("pointID"));
+											}
+										}
+									} catch (Exception e) {
+										// Still show map information even the point's images download failed
+									}
+									//Do fast show img?=====================================================================================================
 									handler.sendEmptyMessage(messageCode.DOWNLOAD_OK);
 								} catch (MalformedURLException e) {
 									e.printStackTrace();
@@ -572,6 +594,7 @@ public class PositionActivity extends Activity {
 			});
 
 			TextView contentDesc = (TextView) v.findViewById(R.id.textDesc);
+			ImageView contentImg = (ImageView) v.findViewById(R.id.pointImg);
 
 			if (tag) {
 				showPointDesc.setTitle(title);
@@ -580,6 +603,14 @@ public class PositionActivity extends Activity {
 			} else {
 				showPointDesc.setTitle("抱歉");
 				contentDesc.setText("此位置已被刪除!");
+			}
+			
+			LookHelper look = new LookHelper();
+			if (look.look(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/", pointId)) {
+				Bitmap b= BitmapFactory.decodeFile(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/"+ pointId);
+				contentImg.setImageBitmap(b);
+			}else {
+				//contentImg.setVisibility(visibility);
 			}
 
 			contentDesc.setTextSize(20);
