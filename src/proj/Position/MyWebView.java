@@ -16,11 +16,9 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -112,7 +110,6 @@ public class MyWebView extends WebView {
 							ImageView contentImg = (ImageView) v.findViewById(R.id.pointImg);
 							TextView contentDesc = (TextView) v.findViewById(R.id.textDesc);
 							contentDesc.setTextSize(20);
-							contentDesc.setTextColor(Color.YELLOW);
 
 							if (jsonObjArray.getJSONObject(i).getString("description").equals("null") || jsonObjArray.getJSONObject(i).getString("description").equals("")) {
 								contentDesc.setText("此地點尚無描述!");
@@ -125,14 +122,6 @@ public class MyWebView extends WebView {
 							if (look.look(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/", jsonObjArray.getJSONObject(i).getString("pointID"))) {
 								Bitmap b= BitmapFactory.decodeFile(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/"+ jsonObjArray.getJSONObject(i).getString("pointID"));
 								contentImg.setImageBitmap(b);
-								int fx = 0;
-								int fy = 0;
-								contentImg.measure(fx, fy);
-								Log.e("@@@@@@@@@@@@", "dss"+contentImg.getHeight()+"fdgfg"+b.getHeight());
-	
-								
-							}else {
-								//contentImg.setVisibility(visibility);
 							}
 							
 							showPointDesc.show();
@@ -215,9 +204,7 @@ public class MyWebView extends WebView {
 				}
 
 				b = Bitmap.createBitmap(pin, 0, 0, pin.getWidth(), pin.getHeight(), m, true);
-				// ====================================================================================================
 				canvas.drawBitmap(b, bx - ((b.getWidth() + 1 * getScale()) / 2), by - (b.getHeight() + 1 * getScale()), null);
-				// ====================================================================================================
 
 			}
 

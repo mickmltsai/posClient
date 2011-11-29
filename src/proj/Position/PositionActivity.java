@@ -27,7 +27,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -61,6 +60,8 @@ public class PositionActivity extends Activity {
 	private interface messageCode {
 		public static final int DOWNLOAD_OK = 0;
 		public static final int DOWNLOAD_FAILED = 1;
+		public static final int RE_DOWNLOAD_OK = 2;
+		public static final int RE_DOWNLOAD_FAILED = 3;
 	}
 
 	/** Called when the activity is first created. */
@@ -201,19 +202,29 @@ public class PositionActivity extends Activity {
 					// Check whether it need to download JSON file
 					isNeedUpdate = !checkMapVerUpdate(Global.MapId, contentMapVer);
 
-					// ========================================================================
-					// If want to separate Map img and JSON file, separate
-					// mapVer into 2 parts
-					// And separate download thread here (Need to Update...)
-					// isNeedUpdate need to be updated
-					// ========================================================================
-
 					// Need to Update
 					if (isNeedUpdate) {
 						waitDownDialog = new ProgressDialog(PositionActivity.this);
 						waitDownDialog.setTitle("下載中!");
 						waitDownDialog.setMessage("請稍等...");
 						waitDownDialog.setCancelable(false);
+						waitDownDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+
+							@Override
+							public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+
+								if ((keyCode == KeyEvent.KEYCODE_SEARCH)) {
+
+									return true;
+
+								} else {
+
+									return false;
+
+								}
+
+							}
+						});
 						waitDownDialog.show();
 
 						// Start to download updated file
@@ -242,7 +253,6 @@ public class PositionActivity extends Activity {
 
 									jsonObjArray = jsonObj.getJSONArray("points");
 
-									//Do fast show img?=====================================================================================================
 									try {
 										// Download point's images
 										for (int i = 0; i < jsonObjArray.length(); i++) {
@@ -251,9 +261,10 @@ public class PositionActivity extends Activity {
 											}
 										}
 									} catch (Exception e) {
-										// Still show map information even the point's images download failed
+										// Still show map information even the
+										// point's images download failed
 									}
-									//Do fast show img?=====================================================================================================
+
 									handler.sendEmptyMessage(messageCode.DOWNLOAD_OK);
 								} catch (MalformedURLException e) {
 									e.printStackTrace();
@@ -412,6 +423,7 @@ public class PositionActivity extends Activity {
 
 	private Boolean checkOldMapData(String MapId) {
 		// Return true if there is old map data
+
 		LookHelper look = new LookHelper();
 		return look.look(Global.SDPathRoot + "/" + Global.MapDirName + "/" + MapId + "/", MapId + ".json");
 	}
@@ -478,7 +490,6 @@ public class PositionActivity extends Activity {
 
 		// Bind the image path
 
-		// String data = "<img src = \"file:///sdcard/somefile.jpg\" />";
 		String data = "<body style=\"margin:0;\"><img src = \"file:///sdcard/" + Global.MapDirName + "/" + mapId + "/" + "map" + "\"/></body>";
 
 		final String mimeType = "text/html";
@@ -527,12 +538,6 @@ public class PositionActivity extends Activity {
 	}
 
 	private void showPointInfo(JSONObject jsonObj, String pointId) {
-		// JSONArray jsonPhoto = jsonObjArray.getJSONObject(
-		// Integer.valueOf(Global.PointId)).getJSONArray(
-		// "photos");
-		// ===================================================================
-
-		// ===================================================================
 
 		JSONArray jsonObjArray;
 		JSONObject jsonObjCoordObject;
@@ -604,18 +609,15 @@ public class PositionActivity extends Activity {
 				showPointDesc.setTitle("抱歉");
 				contentDesc.setText("此位置已被刪除!");
 			}
-			
-			//For show point image
+
+			// For show point image
 			LookHelper look = new LookHelper();
 			if (look.look(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/", pointId)) {
-				Bitmap b= BitmapFactory.decodeFile(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/"+ pointId);
+				Bitmap b = BitmapFactory.decodeFile(Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/" + pointId);
 				contentImg.setImageBitmap(b);
-			}else {
-				//contentImg.setVisibility(visibility);
 			}
 
 			contentDesc.setTextSize(20);
-			contentDesc.setTextColor(Color.YELLOW);
 
 			showPointDesc.setView(v);
 			showPointDesc.show();
@@ -726,7 +728,7 @@ public class PositionActivity extends Activity {
 		// Show failed dialog when download failed
 		waitDownDialog.dismiss();
 		Builder showFailInfo = new AlertDialog.Builder(PositionActivity.this);
-		showFailInfo.setMessage("請確認網路連線\n按確認繼續...");
+		showFailInfo.setMessage("請確認網路連線，或記憶卡狀態\n\n請按確認繼續...");
 		showFailInfo.setTitle("下載失敗!").setPositiveButton("確認", new DialogInterface.OnClickListener() {
 
 			@Override
@@ -741,6 +743,98 @@ public class PositionActivity extends Activity {
 
 	private void reDownloadData() {
 
+		waitDownDialog = new ProgressDialog(PositionActivity.this);
+		waitDownDialog.setTitle("更新中!");
+		waitDownDialog.setMessage("請稍等...");
+		waitDownDialog.setCancelable(false);
+		waitDownDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+
+			@Override
+			public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+
+				if ((keyCode == KeyEvent.KEYCODE_SEARCH)) {
+
+					return true;
+
+				} else {
+
+					return false;
+
+				}
+
+			}
+		});
+		waitDownDialog.show();
+
+		// Start to download file
+		thread = new Thread(new Runnable() {
+
+			public void run() {
+
+				try {
+
+					// Not to update JSON file
+					// downloadMapJson(Global.MapId, contentJsonUrl);
+
+					JSONObject jsonObj = new JSONObject(JsonParser.getJsonRespon(Global.SDPathRoot + "/" + Global.MapDirName + "/last.json"));
+					JSONArray jsonObjArray;
+
+					String map = jsonObj.getString("map");
+					DownloadHelper downloader = new DownloadHelper();
+
+					downloader.downFile(map, Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/", "map");
+
+					jsonObjArray = jsonObj.getJSONArray("points");
+
+					try {
+						// Download point's images
+						for (int i = 0; i < jsonObjArray.length(); i++) {
+							if (!jsonObjArray.getJSONObject(i).getString("photo").equals("")) {
+								downloader.downFile(jsonObjArray.getJSONObject(i).getString("photo"), Global.SDPathRoot + "/" + Global.MapDirName + "/" + Global.MapId + "/", jsonObjArray.getJSONObject(i).getString("pointID"));
+							}
+						}
+					} catch (Exception e) {
+						// Still show map information even the
+						// point's images download failed
+					}
+
+					handler.sendEmptyMessage(messageCode.RE_DOWNLOAD_OK);
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+					handler.sendEmptyMessage(messageCode.RE_DOWNLOAD_FAILED);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+
+		});
+		thread.start();
+	}
+
+	private void reDownloadOk() {
+		showMapData(Global.MapId);
+		waitDownDialog.dismiss();
+	}
+
+	private void reDownloadFailed() {
+
+		// Show failed dialog when download failed
+		showMapData(Global.MapId);
+		waitDownDialog.dismiss();
+
+		Builder showFailInfo = new AlertDialog.Builder(PositionActivity.this);
+		showFailInfo.setMessage("請確認網路連線，或記憶卡狀態\n\n請按確認繼續...");
+		showFailInfo.setTitle("更新失敗!").setPositiveButton("確認", new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+
+			}
+		});
+
+		showFailInfo.show();
 	}
 
 	private Handler handler = new Handler() {
@@ -757,6 +851,14 @@ public class PositionActivity extends Activity {
 				scanResultfailed();
 
 				break;
+			case messageCode.RE_DOWNLOAD_OK:
+				reDownloadOk();
+
+				break;
+			case messageCode.RE_DOWNLOAD_FAILED:
+				reDownloadFailed();
+
+				break;
 			}
 
 			super.handleMessage(msg);
@@ -765,16 +867,16 @@ public class PositionActivity extends Activity {
 
 	protected static final int MENU_ShowPoints = Menu.FIRST;
 	protected static final int MENU_ChooseMap = Menu.FIRST + 1;
-	protected static final int MENU_RefreshData = Menu.FIRST + 2;
-	protected static final int MENU_LastPosition = Menu.FIRST + 3;
+	protected static final int MENU_LastPosition = Menu.FIRST + 2;
+	protected static final int MENU_RefreshData = Menu.FIRST + 3;
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, MENU_ShowPoints, 0, "瀏覽定位點");
 		menu.add(0, MENU_ChooseMap, 0, "選擇地圖");
-		// menu.add(0, MENU_RefreshData, 0, "重整圖檔");
 		menu.add(0, MENU_LastPosition, 0, "上次位置");
+		menu.add(0, MENU_RefreshData, 0, "重整圖片");
 		return true;
 	}
 
@@ -794,15 +896,16 @@ public class PositionActivity extends Activity {
 			startActivityForResult(intent2, 2);
 
 			break;
-		case MENU_RefreshData:
-
-			break;
 		case MENU_LastPosition:
 			showLastPosition();
 
 			break;
+		case MENU_RefreshData:
+			reDownloadData();
+
+			break;
+
 		}
 		return true;
 	}
-
 }
